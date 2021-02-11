@@ -31,7 +31,6 @@ const AllWritingsScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
-          console.log(item.id);
           return <JournalCard journal={item} navigation={navigation}/>;
         }}
       />

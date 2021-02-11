@@ -10,7 +10,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import firebase from 'firebase';
+
 import colors from "../../constants/colors";
 
 const UserProfileScreen = ({ navigation }) => {
@@ -95,42 +95,9 @@ const UserProfileScreen = ({ navigation }) => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={1} style={styles.moreOption} onPress={() => navigation.navigate("HelpAndSupport")}>
-          <FontAwesome
-            name="question-circle"
-            color={colors.darkGrey}
-            size={18}
-            style={styles.optionIcon}
-          />
-          <View style={styles.moreOptionInfo}>
-            <Text style={styles.moreOptionText}>Help &amp; Support</Text>
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={22}
-              color={colors.lightBlack}
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={1} style={styles.moreOption} onPress={() => navigation.navigate("PrivacyPolicy")}>
-          <Ionicons
-            name="lock-closed"
-            color={colors.darkGrey}
-            size={18}
-            style={styles.optionIcon}
-          />
-          <View style={styles.moreOptionInfo}>
-            <Text style={styles.moreOptionText}>Privacy Policy</Text>
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={22}
-              color={colors.lightBlack}
-            />
-          </View>
-        </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={1}
           style={styles.moreOption}
-          onPress={() => navigation.navigate("ApplicationInfo")}
         >
           <Ionicons
             name="information-circle"
@@ -140,20 +107,14 @@ const UserProfileScreen = ({ navigation }) => {
           />
           <View style={styles.moreOptionInfo}>
             <Text style={styles.moreOptionText}>App Info</Text>
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={22}
-              color={colors.lightBlack}
-            />
+            <Text style={[styles.moreOptionText, {color: colors.darkGrey}]}>v1.0.0</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={1}
           style={styles.moreOption}
           onPress={() =>
-            firebase.auth().signOut().then(()=>
             navigation.replace("AuthenticationStack", { screen: "Login" })
-          )
           }
         >
           <FontAwesome
