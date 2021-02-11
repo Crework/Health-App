@@ -1,1 +1,0 @@
-export const mongoURL = "mongodb+srv://creworks_admin:creworks123@creworks.4gt69.mongodb.net/<dbname>?retryWrites=true&w=majority";

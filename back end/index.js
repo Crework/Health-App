@@ -1,15 +1,20 @@
-const express = require('express');
-const mongoose = require('mongoose');
+const express = require("express");
+const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 require("dotenv").config();
 
+const db = require("./config/database");
+const journalRoutes = require("./routes/journalRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(logger("dev"));
+
+db(); 
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -21,13 +26,14 @@ app.use((req, res, next) => {
     next();
 });
 
-const PORT = process.env.PORT;
+app.use("/api/journals", journalRoutes);
+app.use("/api/users", userRoutes);
 
-mongoose.connect(process.env.MONGODB_URI, {useUnifiedTopology: true, useNewUrlParser: true}).then(
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}!`);
-    })
-).catch(error => {
-    console.log(error.message);
+const PORT = process.env.port || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server Running On ${PORT} with DB connected!`);
 });
 
+// 60254d5f3f086ffd4ae57b79 userid
+// 60254de63f086ffd4ae57b7a" journalid

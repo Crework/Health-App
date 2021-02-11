@@ -120,14 +120,7 @@ const WritingAnalysisScreen = ({ navigation }) => {
             </View>
           </View>
         </View>
-
-        <TouchableOpacity
-          activeOpacity={1}
-          style={styles.analysisCard}
-          onPress={() => {
-            setWordCloudShown(false);
-          }}
-        >
+        <TouchableOpacity activeOpacity={1} style={styles.analysisCard}>
           <View style={styles.row}>
             <Ionicons
               name="analytics-outline"
