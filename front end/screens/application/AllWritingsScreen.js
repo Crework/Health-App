@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -11,14 +11,39 @@ import {
   TouchableWithoutFeedback,
   TextInput,
 } from "react-native";
+import {useAsyncStorage} from "@react-native-community/async-storage";
+import { useDispatch, useSelector } from "react-redux";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import JournalCard from "../../components/JournalCard";
-import {journals} from "../../Data/journalsData";
+import {getAllJournals} from "../../redux/actions";
+
 
 import colors from "../../constants/colors";
 
+const {getItem} = useAsyncStorage("userId");
+
+
 const AllWritingsScreen = ({ navigation }) => {
+
+  const journals = useSelector(state => state.journals );
+
+  const dispatch = useDispatch();
   
+  useEffect(()=> {
+    const userId = getItem().then(data => {
+      return data;
+    }).then().catch(err => {console.log(err)});
+    fetch(`http://localhost:3000/api/journals/${userId}/get-all`)
+    .then(
+      response => response.json()
+    ).then(
+      data => {
+        dispatch(getAllJournals(data))
+      }
+    )
+  })
+
+
   return (
     <View style={styles.screen}>
       <View style={styles.searchBoxContainer}>

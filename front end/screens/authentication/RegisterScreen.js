@@ -20,7 +20,7 @@ import FacebookIcon from "../../assets/images/facebook.png";
 
 import colors from "../../constants/colors";
 
-const {getItem, setItem} = useAsyncStorage();
+const {getItem, setItem} = useAsyncStorage('userId');
 
 const RegisterScreen = ({ navigation }) => {
   let fullNameRef = useRef();
