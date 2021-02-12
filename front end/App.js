@@ -4,16 +4,17 @@ import { createStackNavigator } from "@react-navigation/stack";
 import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
 import  * as firebase  from "firebase";
+import {Provider} from "react-redux";
 
 import { ActivityIndicator, View } from "react-native";
 import AuthenticationStack from "./navigation/AuthenticationStack";
 import ApplicationTabs from "./navigation/ApplicationTabs";
 import { firebaseConfig } from "./firebaseConfig";
-// import mongoConnect from "./util/database";
+import store from "./redux/index";
 
 
 const Stack = createStackNavigator();
-// const app = express();
+
 
 const loadFonts = () => {
   return Font.loadAsync({
@@ -50,13 +51,7 @@ export default function App() {
     if(!firebase.apps.length){
       firebase.initializeApp(firebaseConfig);
     }
-    checkIfLoggedIn()
-    // mongoConnect(client => {
-    //   console.log(client);
-    //   // app.listen(3000, ()=>{
-    //   //   console.log("Listening on port 3000")
-    //   // });
-    // })
+    checkIfLoggedIn();
 
   })
 
@@ -75,7 +70,8 @@ export default function App() {
   console.log(loggedIn)
 
   return (
-    <NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
       <Stack.Navigator headerMode="none" initialRouteName={ loggedIn==false ? "AuthenticationStack": "ApplicationTabs"}>
         <Stack.Screen
           name="AuthenticationStack"
@@ -87,5 +83,6 @@ export default function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
   );
 }
