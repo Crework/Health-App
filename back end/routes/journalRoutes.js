@@ -15,7 +15,7 @@ router.get("/:userId/get-all", async (req, res, next) => {
   return res.json({ error: "No Journals found!" });
 });
 
-router.post("/:userId/add-one/", async (req, res, next) => {
+router.post("/:userId/add-one", async (req, res, next) => {
   const content = req.body.content;
   const userId = req.params.userId;
   const process = spawn("python3", ["./ML/ML.py", content]);
@@ -83,5 +83,26 @@ router.put("/:journalId/edit-one/", async (req, res) => {
     console.log("editing error", error);
   }
 });
+
+router.get("/:journalId/get-one/", async (req, res) => {
+  const journalId = req.params.journalId;
+  try{
+    Journal.findOne({_id: journalId}, function(err, foundJournal){
+      if(err){
+        console.log(err);
+        res.status(500).send();
+      }else {
+        if(!foundJournal){
+          res.status(404).send();
+        }else{
+          return res.json({foundJournal});
+        }
+      }
+   })
+  }catch(error) {
+    console.log("Journal finding error", error);
+  }
+});
+
 
 module.exports = router;

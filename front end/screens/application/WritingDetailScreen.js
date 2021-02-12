@@ -13,13 +13,27 @@ import {
   Keyboard,
   Dimensions,
 } from "react-native";
+import env from "../../env";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 import colors from "../../constants/colors";
 
 const { width, height } = Dimensions.get("window");
 
-const WritingDetailScreen = ({ navigation }) => {
+const WritingDetailScreen = ({ navigation, route }) => {
+
+  const {id} = route.params;
+  const [content, setContent] = useState('');
+  useEffect( () =>{
+    const fetchJournalDetails = async() => {
+      const response = await fetch(`${env.url}/api/journals/${id}/get-one`);
+      const data = await response.json();
+      setContent(data.foundJournal);
+    }
+    fetchJournalDetails();
+  }, []);
+
+
   return (
     <View style={styles.screen}>
       <View style={styles.writingHeader}>
@@ -32,7 +46,7 @@ const WritingDetailScreen = ({ navigation }) => {
         />
         <View style={styles.actionButtonsContainer}>
         <MaterialIcons
-          onPress={() => navigation.navigate("EditWriting")}
+          onPress={() => navigation.navigate("EditWriting", {"journal" : content})}
           name="edit"
           size={24}
           color="black"
@@ -91,70 +105,7 @@ const WritingDetailScreen = ({ navigation }) => {
               backgroundColor: colors.differentGreyBackground,
             }}
           >
-            User's Journal Here
-          </Text>
-          <Text
-            style={{
-              height: 200,
-              width: "100%",
-              backgroundColor: colors.differentGreyBackground,
-            }}
-          >
-            User's Journal Here
-          </Text>
-          <Text
-            style={{
-              height: 200,
-              width: "100%",
-              backgroundColor: colors.differentGreyBackground,
-            }}
-          >
-            User's Journal Here
-          </Text>
-          <Text
-            style={{
-              height: 200,
-              width: "100%",
-              backgroundColor: colors.differentGreyBackground,
-            }}
-          >
-            User's Journal Here
-          </Text>
-          <Text
-            style={{
-              height: 200,
-              width: "100%",
-              backgroundColor: colors.differentGreyBackground,
-            }}
-          >
-            User's Journal Here
-          </Text>
-          <Text
-            style={{
-              height: 200,
-              width: "100%",
-              backgroundColor: colors.differentGreyBackground,
-            }}
-          >
-            User's Journal Here
-          </Text>
-          <Text
-            style={{
-              height: 200,
-              width: "100%",
-              backgroundColor: colors.differentGreyBackground,
-            }}
-          >
-            User's Journal Here
-          </Text>
-          <Text
-            style={{
-              height: 200,
-              width: "100%",
-              backgroundColor: colors.differentGreyBackground,
-            }}
-          >
-            User's Journal Here
+            {content.content}
           </Text>
         </View>
       </ScrollView>

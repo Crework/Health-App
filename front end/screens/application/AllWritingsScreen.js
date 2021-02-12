@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,13 +11,32 @@ import {
   TouchableWithoutFeedback,
   TextInput,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from "react-redux";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import JournalCard from "../../components/JournalCard";
-import {journals} from "../../Data/journalsData";
+import {getAllJournals} from "../../redux/actions";
+import env from "../../env";
+
 
 import colors from "../../constants/colors";
 
+
 const AllWritingsScreen = ({ navigation }) => {
+  const journals = useSelector(state => state.journals );
+  const dispatch = useDispatch();
+  
+  useEffect(()=> {
+    const getUserId = async () => {
+      const userId = await AsyncStorage.getItem("userId");
+      const response = await fetch(`${env.url}/api/journals/${userId}/get-all`);
+      const data = await response.json();
+      console.log(data.journals[0].createdAt);
+      dispatch(getAllJournals(data.journals));
+    }
+    getUserId();
+  },[])
+
   return (
     <View style={styles.screen}>
       <View style={styles.searchBoxContainer}>
@@ -29,7 +48,7 @@ const AllWritingsScreen = ({ navigation }) => {
         data={journals}
         centerContent
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => {
           return <JournalCard journal={item} navigation={navigation}/>;
         }}
@@ -40,7 +59,7 @@ const AllWritingsScreen = ({ navigation }) => {
     </View>
   );
 };
-
+ 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,

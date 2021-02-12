@@ -15,7 +15,8 @@ import {
 } from "react-native";
 import firebase from 'firebase';
 import { Ionicons } from "@expo/vector-icons";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import env from "../../env";
 import GoogleIcon from "../../assets/images/google.png";
 import FacebookIcon from "../../assets/images/facebook.png";
 
@@ -50,12 +51,19 @@ const LoginScreen = ({ navigation }) => {
     }
     else{
       firebase.auth().signInWithEmailAndPassword(email,Password)
-      .then((userCredentials)=>{
+      // .then(async()=>{
+      //   console.log("here");
+      //   const response = await fetch(`${env.url}/api/users/${email}/get-id`);
+      //   console.log("r1",response);
+      // })
+      // .then(response => console.log("res",response))
+      .then( ()=>{
         navigation.reset({
           index:0,
           routes: [{name:'ApplicationTabs'}]
         })
       })
+
       .catch((err)=>{
         console.log(err.message);
         seterror(err.message);

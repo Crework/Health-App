@@ -6,16 +6,27 @@ import { Ionicons } from "@expo/vector-icons";
 const { height, width } = Dimensions.get("window");
 
 const JournalCard = ({ journal, navigation }) => {
-  const [date, month, year] = journal.creationDate.split(" ");
+
+  const day = new Date(journal.createdAt).getDay();
+  const month = new Date(journal.createdAt).getMonth();
+  const year = new Date(journal.createdAt).getFullYear();
+  const date = new Date(journal.createdAt).getDate();
+  const hours = new Date(journal.createdAt).getHours();
+  const minutes = new Date(journal.createdAt).getMinutes();
+
+  const daysOfTheWeek = [ 'Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthsOfTheYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', "August", 'September', 'October', 'November', 'December'];
+  console.log("here");
+
   return (
-    <TouchableOpacity activeOpacity={0.7} style={styles.journalCardContainer} onPress={() => navigation.navigate("WritingDetail")}>
+    <TouchableOpacity activeOpacity={0.7} style={styles.journalCardContainer} onPress={() => navigation.navigate("WritingDetail", {"id" : journal._id})}>
       <View style={styles.journalCard}>
         <View style={styles.journalHead}>
-          <Text style={styles.day}>{journal.creationDay.slice(0, 3)}</Text>
+          <Text style={styles.day}>{daysOfTheWeek[day].slice(0, 3)}</Text>
           <Text style={styles.date}>
-            {date.length === 1 ? `0${date}` : date}
+            {date}
           </Text>
-          <Text style={styles.month}>{month}</Text>
+          <Text style={styles.month}>{monthsOfTheYear[month].slice(0,3)}</Text>
         </View>
         <View style={styles.journalContent}>
           <Text style={styles.content} numberOfLines={4}>
@@ -24,7 +35,7 @@ const JournalCard = ({ journal, navigation }) => {
         </View>
       </View>
       <View style={styles.timeStamp}>
-        <Text style={styles.timeText}>{journal.creationTime}</Text>
+        <Text style={styles.timeText}>{hours}:{minutes}</Text>
       </View>
     </TouchableOpacity>
   );

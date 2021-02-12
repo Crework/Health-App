@@ -14,18 +14,30 @@ import {
   Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from "../../constants/colors";
+import {useDispatch} from 'react-redux';
+import { editJournal } from "../../redux/actions";
 
 const { width, height } = Dimensions.get("window");
 
-const EditWritingScreen = ({ navigation }) => {
+const EditWritingScreen = ({ navigation, route }) => {
+
+  const dispatch = useDispatch();
+  const {journal} = route.params; 
+
+  const [content, setContent] = useState(journal.content);
   const [upperAreaHeight, setUpperAreaHeight] = useState(0);
   let writingRef = useRef();
 
   useEffect(() => {
     writingRef?.focus();
   }, []);
+
+  const onSaveButtonClicked = () => {
+    dispatch(editJournal(journal._id, content));
+    navigation.replace("WritingDetail", {"id" : journal._id});
+  }
 
   return (
     <View style={styles.screen}>
@@ -37,7 +49,7 @@ const EditWritingScreen = ({ navigation }) => {
           color="black"
           style={styles.backLogo}
         />
-        <TouchableOpacity activeOpacity={1} style={styles.saveButtonContainer} onPress={() => navigation.goBack()}>
+        <TouchableOpacity activeOpacity={1} style={styles.saveButtonContainer} onPress={onSaveButtonClicked}>
             <Text style={styles.saveButton}>Save</Text>
         </TouchableOpacity>
       </View>
@@ -80,6 +92,8 @@ const EditWritingScreen = ({ navigation }) => {
           multiline={true}
           scrollEnabled={true}
           blurOnSubmit={true}
+          value = {content}
+          onChangeText = {text => setContent(text)}
           returnKeyType="done"
           style={styles.input}
           ref={(writing) => (writingRef = writing)}

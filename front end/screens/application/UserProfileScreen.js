@@ -16,7 +16,7 @@ import colors from "../../constants/colors";
 
 
 const UserProfileScreen = ({ navigation }) => {
-
+  console.log(new Date("2021-02-07T18:00:24.644Z").getDay());
 
   const onButtonPress = () => {
     firebase.auth().signOut()

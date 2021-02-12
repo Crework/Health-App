@@ -33,7 +33,6 @@ router.put("/:userID/edit-user", async (req, res) => {
   const UserId = req.params.UserId;
   try{
     User.findOne({_id: UserId}, async function(err, foundUser){
-
       if(err){
         console.log(err);
         res.status(500).send();
@@ -58,5 +57,25 @@ router.put("/:userID/edit-user", async (req, res) => {
     console.log("editing user profile error : ", error);
   }
 });
+
+router.get("/:userEmail/get-id", async (req,res) => {
+  const userEmail = req.params.userEmail;
+  try{
+    User.findOne({email: userEmail}, async function(err, foundUser){
+      if(err){
+        console.log(err);
+        res.status(500).send();
+      }else {
+        if(!foundUser){
+          res.status(404).send();
+        }else{
+          res.json(foundUser._id);
+        }
+      }
+    })
+  }catch(error){
+    console.log("getting user using email : ", error);
+  }
+})
 
 module.exports = router;
