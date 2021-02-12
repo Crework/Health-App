@@ -9,11 +9,28 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
+import firebase from "firebase";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 import colors from "../../constants/colors";
 
+
 const UserProfileScreen = ({ navigation }) => {
+
+
+  const onButtonPress = () => {
+    firebase.auth().signOut()
+    .then(()=>{
+      navigation.reset({
+        index : 0,
+        routes : [{name:'AuthenticationStack'}]
+      })
+    })
+    .catch((err)=>{
+      console.log(err.message);
+    })
+  }
+
   return (
     <View style={styles.screen}>
       <View style={styles.profileHeader}>
@@ -113,9 +130,7 @@ const UserProfileScreen = ({ navigation }) => {
         <TouchableOpacity
           activeOpacity={1}
           style={styles.moreOption}
-          onPress={() =>
-            navigation.replace("AuthenticationStack", { screen: "Login" })
-          }
+          onPress={() => onButtonPress()}
         >
           <FontAwesome
             name="sign-out"

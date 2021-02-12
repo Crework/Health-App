@@ -11,11 +11,27 @@ import {
   BackHandler,
   KeyboardAvoidingView,
 } from "react-native";
+import firebase from 'firebase';
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 
 import colors from "../../constants/colors";
 
 const ProfileSettingsScreen = ({ navigation }) => {
+
+  const onDeleteButtonPress = () => {
+    const user = firebase.auth().currentUser;
+    user.delete().then(function(){
+      navigation.reset({
+        index : 0,
+        routes:[{
+          name:'AuthenticationStack'
+        }] 
+      })
+    }). catch( error =>{
+      console.log(error);
+    })
+  }
+
   return (
     <View style={styles.screen}>
       <View style={styles.resetHeader}>
@@ -42,7 +58,7 @@ const ProfileSettingsScreen = ({ navigation }) => {
         </View>
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => navigation.replace("AuthenticationStack", {screen: "Welcome"})}
+          onPress={() => onDeleteButtonPress()}
           style={[
             styles.moreOption,
             { flexDirection: "column", backgroundColor: colors.secondary, marginTop: 16 },
