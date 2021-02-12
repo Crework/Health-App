@@ -45,9 +45,12 @@ const RegisterScreen = ({ navigation }) => {
     }
     else{
       firebase.auth().createUserWithEmailAndPassword(email,password)
-      .then(()=>{
-        console.log("signing up")
-        navigation.navigate("ApplicationTabs");
+      .then((userCredentials)=>{
+        console.log("signing up");
+        navigation.reset({
+          index : 0,
+          routes:[{name:'ApplicationTabs'}]
+        })
       })
       .catch((err)=>{
         console.log(err.message);

@@ -32,7 +32,7 @@ router.get("/get-all", async (req, res) => {
 router.put("/:userID/edit-user", async (req, res) => {
   const UserId = req.params.UserId;
   try{
-    User.findOne({_id: UserId}, (err, foundUser)=>{
+    User.findOne({_id: UserId}, async function(err, foundUser){
 
       if(err){
         console.log(err);
@@ -49,6 +49,7 @@ router.put("/:userID/edit-user", async (req, res) => {
           }
           console.log(foundUser);
           await foundUser.save();
+          return res.json({foundUser});
         }
       }
 
