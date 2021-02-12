@@ -18,6 +18,7 @@ import {journals} from "../../Data/journalsData";
 import colors from "../../constants/colors";
 
 const AllWritingsScreen = ({ navigation }) => {
+  
   return (
     <View style={styles.screen}>
       <View style={styles.searchBoxContainer}>

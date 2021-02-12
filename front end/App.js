@@ -3,17 +3,16 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
-import  * as firebase  from "firebase";
-
+import * as firebase from "firebase";
+import { Provider } from "react-redux";
 import { ActivityIndicator, View } from "react-native";
+
 import AuthenticationStack from "./navigation/AuthenticationStack";
 import ApplicationTabs from "./navigation/ApplicationTabs";
 import { firebaseConfig } from "./firebaseConfig";
-// import mongoConnect from "./util/database";
-
+import store from "./redux";
 
 const Stack = createStackNavigator();
-// const app = express();
 
 const loadFonts = () => {
   return Font.loadAsync({
@@ -24,68 +23,66 @@ const loadFonts = () => {
     Bold: require("./assets/fonts/Inter-Bold.ttf"),
     Black: require("./assets/fonts/Inter-Black.ttf"),
     Logo: require("./assets/fonts/PottaOne-Regular.ttf"),
-    Name:require("./assets/fonts/YuseiMagic-Regular.ttf"),
-    Quote:require("./assets/fonts/Pacifico-Regular.ttf")
+    Name: require("./assets/fonts/YuseiMagic-Regular.ttf"),
+    Quote: require("./assets/fonts/Pacifico-Regular.ttf"),
   });
 };
-
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [loggedIn, setLoggedInState] = useState(null);
 
-  const checkIfLoggedIn = () =>{
-    firebase.auth().onAuthStateChanged((user)=>{
-      if(user){
+  const checkIfLoggedIn = () => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
         console.log(user);
         setLoggedInState(true);
-      }
-      else{
+      } else {
         setLoggedInState(false);
       }
-    })
-  }
+    });
+  };
 
-  useEffect(() =>{
-    if(!firebase.apps.length){
+  useEffect(() => {
+    if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-    checkIfLoggedIn()
-    // mongoConnect(client => {
-    //   console.log(client);
-    //   // app.listen(3000, ()=>{
-    //   //   console.log("Listening on port 3000")
-    //   // });
-    // })
-
-  })
+    checkIfLoggedIn();
+  });
 
   if (!fontsLoaded) {
     return (
       <AppLoading
         startAsync={loadFonts}
-        onFinish={() => {console.log("loaded successfully"); setFontsLoaded(true)}}
+        onFinish={() => {
+          console.log("loaded successfully");
+          setFontsLoaded(true);
+        }}
         onError={(err) => console.log(err)}
       />
     );
   }
 
-  if(loggedIn==null) return <AppLoading/>
+  if (loggedIn == null) return <AppLoading />;
 
-  console.log(loggedIn)
+  console.log(loggedIn);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator headerMode="none" initialRouteName={ loggedIn==false ? "AuthenticationStack": "ApplicationTabs"}>
-        <Stack.Screen
-          name="AuthenticationStack"
-          component={AuthenticationStack}
-        />
-        <Stack.Screen 
-          name="ApplicationTabs" 
-          component={ApplicationTabs} 
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator
+          headerMode="none"
+          initialRouteName={
+            loggedIn == false ? "AuthenticationStack" : "ApplicationTabs"
+          }
+        >
+          <Stack.Screen
+            name="AuthenticationStack"
+            component={AuthenticationStack}
+          />
+          <Stack.Screen name="ApplicationTabs" component={ApplicationTabs} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }

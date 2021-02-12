@@ -11,6 +11,7 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
+import {useAsyncStorage} from "@react-native-community/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import firebase from "firebase";
 
@@ -19,6 +20,8 @@ import FacebookIcon from "../../assets/images/facebook.png";
 
 import colors from "../../constants/colors";
 
+const {getItem, setItem} = useAsyncStorage();
+
 const RegisterScreen = ({ navigation }) => {
   let fullNameRef = useRef();
   const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +29,9 @@ const RegisterScreen = ({ navigation }) => {
 
   useEffect(() => {
     fullNameRef?.focus();
+    console.log(getItem((result) => {
+      console.log(result);
+    }));
   }, []);
 
 
@@ -46,6 +52,29 @@ const RegisterScreen = ({ navigation }) => {
     else{
       firebase.auth().createUserWithEmailAndPassword(email,password)
       .then(()=>{
+        fetch("http://localhost:3000/api/users/add-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name,
+            email,
+          })
+        }).then(
+          response => response.json()
+        ).then(userId => {
+          setItem(userId.toString(), (err) => {
+            if(!err) {
+              console.log("Done");
+            }
+            else {
+              console.log(err, "error");
+            }
+          })
+        }).catch(error => {
+          console.log(error);
+        })
         console.log("signing up")
         navigation.navigate("ApplicationTabs");
       })
