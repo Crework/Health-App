@@ -1,10 +1,15 @@
 const mongoose = require('mongoose');
 
 const dbURL = process.env.MONGODB_URI;
+console.log(dbURL);
 
 module.exports = () => {
 
-    mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true});
+    mongoose.connect(dbURL, {useNewUrlParser: true, useUnifiedTopology: true}).then(()=>{
+        console.log("connected")
+    }).catch((err)=>{
+        console.log(err)
+    });
 
     mongoose.connection.once('connected', () => {
         console.log("Mongoose database connected on", dbURL);

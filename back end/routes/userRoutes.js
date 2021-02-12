@@ -16,7 +16,7 @@ router.post("/add-new", async (req, res) => {
     await newlyAddedUser.save();
     res.json({newlyAddedUser});
   } catch (error) {
-      console.log(error);
+      console.log("user route error", error);
   }
 });
 
@@ -27,6 +27,35 @@ router.get("/get-all", async (req, res) => {
     } catch (error) {
         console.log(error);
     }
+});
+
+router.put("/:userID/edit-user", async (req, res) => {
+  const UserId = req.params.UserId;
+  try{
+    User.findOne({_id: UserId}, (err, foundUser)=>{
+
+      if(err){
+        console.log(err);
+        res.status(500).send();
+      }else {
+        if(!foundUser){
+          res.status(404).send();
+        }else{
+          if(req.body.email){
+            foundUser.email = email;
+          }
+          if(req.body.name){
+            foundUser.name = name;
+          }
+          console.log(foundUser);
+          await foundUser.save();
+        }
+      }
+
+    })
+  }catch(error) {
+    console.log("editing user profile error : ", error);
+  }
 });
 
 module.exports = router;
