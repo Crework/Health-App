@@ -22,13 +22,51 @@ const { width, height } = Dimensions.get("window");
 
 const WritingDetailScreen = ({ navigation, route }) => {
 
+  const daysOfTheWeek = [ 'Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthsOfTheYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', "August", 'September', 'October', 'November', 'December'];
+  
   const {id} = route.params;
   const [content, setContent] = useState('');
+  const [dateInfo, setDateInfo] = useState({
+    date:'',
+    day:'',
+    month: '',
+    year: '',
+    hour: {
+      suffix: '',
+      hours: ''
+    },
+    minute: ''
+  });
+
+  const convertTime = (hours) => {
+    let suffix = 'AM'
+    if(hours>=12){
+      if(hours!=24)
+        suffix = 'PM'
+      if(hours!=12)
+        hours = hours % 12;
+    }
+    return {
+      suffix,
+      hours
+    }
+  }
+
+
   useEffect( () =>{
     const fetchJournalDetails = async() => {
       const response = await fetch(`${env.url}/api/journals/${id}/get-one`);
       const data = await response.json();
       setContent(data.foundJournal);
+      setDateInfo({
+        date: new Date(data.foundJournal.createdAt).getDate(),
+        day:daysOfTheWeek[new Date(data.foundJournal.createdAt).getDay()],
+        month: monthsOfTheYear[new Date(data.foundJournal.createdAt).getMonth()],
+        year: new Date(data.foundJournal.createdAt).getFullYear(),
+        hour: convertTime(new Date(data.foundJournal.createdAt).getHours()),
+        minute: new Date(data.foundJournal.createdAt).getMinutes()
+      })
     }
     fetchJournalDetails();
   }, []);
@@ -65,12 +103,19 @@ const WritingDetailScreen = ({ navigation, route }) => {
         <View style={styles.dateInfo}>
           <View style={styles.date}>
             <View style={styles.row}>
-              <Text style={styles.dateText}>14</Text>
-              <Text style={styles.monthText}>February</Text>
+              <Text style={styles.dateText}>
+              </Text>
+              <Text style={styles.monthText}>
+                {dateInfo.month}
+              </Text>
             </View>
             <View style={styles.row}>
-              <Text style={styles.yearText}>2021,</Text>
-              <Text style={styles.dayText}>Sunday</Text>
+              <Text style={styles.yearText}>
+                {new Date(content.createdAt).getFullYear()},
+              </Text>
+              <Text style={styles.dayText}>
+                {dateInfo.day}
+              </Text>
             </View>
           </View>
           <View style={styles.iconContainer}>
@@ -83,7 +128,9 @@ const WritingDetailScreen = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.timeInfo}>
-          <Text style={styles.timeText}>11:11 AM</Text>
+          <Text style={styles.timeText}>
+            {dateInfo.hour.hours.length==1 ? `0${dateInfo.hour.hours}` : dateInfo.hour.hours}:{ dateInfo.minute.length==1 ? `0${dateInfo.minute}` : dateInfo.minute} {dateInfo.hour.suffix}
+          </Text>
           <View style={styles.iconContainer}>
             <Ionicons
               name="time"

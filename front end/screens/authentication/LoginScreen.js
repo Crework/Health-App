@@ -51,19 +51,18 @@ const LoginScreen = ({ navigation }) => {
     }
     else{
       firebase.auth().signInWithEmailAndPassword(email,Password)
-      // .then(async()=>{
-      //   console.log("here");
-      //   const response = await fetch(`${env.url}/api/users/${email}/get-id`);
-      //   console.log("r1",response);
-      // })
-      // .then(response => console.log("res",response))
+      .then( async ()=>{
+        console.log("here");
+        const response = await fetch(`${env.url}/api/users/${email}/get-id`);
+        const id = await response.json()
+        await AsyncStorage.setItem("userId", id._id);
+      })
       .then( ()=>{
         navigation.reset({
           index:0,
-          routes: [{name:'ApplicationTabs'}]
+          routes: [{name:' '}]
         })
       })
-
       .catch((err)=>{
         console.log(err.message);
         seterror(err.message);

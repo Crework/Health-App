@@ -69,7 +69,7 @@ router.get("/:userEmail/get-id", async (req,res) => {
         if(!foundUser){
           res.status(404).send();
         }else{
-          res.json(foundUser._id);
+          res.json({"_id":foundUser._id});
         }
       }
     })
