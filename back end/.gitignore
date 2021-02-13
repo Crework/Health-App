@@ -9,6 +9,7 @@ npm-debug.*
 *.orig.*
 web-build/
 .vscode/
+*.png
 
 # macOS
 .DS_Store
