@@ -53,7 +53,7 @@ const EditWritingScreen = ({ navigation, route }) => {
     }
     return {
       suffix,
-      hours
+      'hours': hours.toString()
     }
   }
   
@@ -67,7 +67,7 @@ const EditWritingScreen = ({ navigation, route }) => {
       month: monthsOfTheYear[new Date(journal.createdAt).getMonth()],
       year: new Date(journal.createdAt).getFullYear(),
       hour: convertTime(new Date(journal.createdAt).getHours()),
-      minute: new Date(journal.createdAt).getMinutes()
+      minute: new Date(journal.createdAt).getMinutes().toString()
     })
     
   }, []);

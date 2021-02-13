@@ -37,6 +37,12 @@ const AllWritingsScreen = ({ navigation }) => {
     getUserId();
   },[])
 
+  const onPlusButtonClicked = () => {
+    if(journals[journals.length-1].createdAt.split('T')[0] === new Date().toISOString().split('T')[0])
+      navigation.navigate("EditWriting", {journal: journals[journals.length -1]});
+    else navigation.navigate('NewWriting');
+  }
+
   return (
     <View style={styles.screen}>
       <View style={styles.searchBoxContainer}>
@@ -53,7 +59,7 @@ const AllWritingsScreen = ({ navigation }) => {
           return <JournalCard journal={item} navigation={navigation}/>;
         }}
       />
-      <TouchableOpacity activeOpacity={1} style={styles.addJournalButton} onPress={() => {navigation.navigate("NewWriting")}}>
+      <TouchableOpacity activeOpacity={1} style={styles.addJournalButton} onPress={() => {onPlusButtonClicked()}}>
           <Ionicons name="add-sharp" size={32} color={colors.white} style={styles.addIcon}/>
       </TouchableOpacity>
     </View>

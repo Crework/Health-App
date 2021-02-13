@@ -38,7 +38,7 @@ const NewWritingScreen = ({ navigation }) => {
     }
     return {
       suffix,
-      hours
+      'hours':hours.toString()
     }
   }
   const [content, setContent] = useState('');
@@ -48,7 +48,7 @@ const NewWritingScreen = ({ navigation }) => {
     month: monthsOfTheYear[new Date().getMonth()],
     year: new Date().getFullYear(),
     hour: convertTime(new Date().getHours()),
-    minute: new Date().getMinutes()
+    minute: new Date().getMinutes().toString()
   });
 
   const [upperAreaHeight, setUpperAreaHeight] = useState(0);
@@ -64,7 +64,7 @@ const NewWritingScreen = ({ navigation }) => {
         month: monthsOfTheYear[new Date().getMonth()],
         year: new Date().getFullYear(),
         hour: convertTime(new Date().getHours()),
-        minute: new Date().getMinutes()
+        minute: new Date().getMinutes().toString()
       })
     }, 1000);
     return () => {

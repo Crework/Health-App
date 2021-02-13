@@ -63,6 +63,8 @@ const RegisterScreen = ({ navigation }) => {
         ).then(async ({newlyAddedUser:{_id}}) => {
           console.log(_id);
           await AsyncStorage.setItem("userId", _id);
+          await AsyncStorage.setItem("userName", name);
+          await AsyncStorage.setItem("userEmail", email);
           console.log("signing up");
           navigation.navigate("ApplicationTabs");
         }).catch(error => {

@@ -16,7 +16,9 @@ import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 
 import colors from "../../constants/colors";
 
-const ProfileSettingsScreen = ({ navigation }) => {
+const ProfileSettingsScreen = ({ navigation, route }) => {
+
+  const {name,email} = route.params;
 
   const onDeleteButtonPress = () => {
     const user = firebase.auth().currentUser;
@@ -50,11 +52,11 @@ const ProfileSettingsScreen = ({ navigation }) => {
       >
         <View style={styles.moreOption}>
           <Text style={styles.labelText}>Email</Text>
-          <Text style={styles.labelInfo}>johndoe00@gmail.com</Text>
+          <Text style={styles.labelInfo}>{email}</Text>
         </View>
         <View style={styles.moreOption}>
           <Text style={styles.labelText}>Name</Text>
-          <Text style={styles.labelInfo}>John Doe</Text>
+          <Text style={styles.labelInfo}>{name}</Text>
         </View>
         <TouchableOpacity
           activeOpacity={1}

@@ -1,30 +1,33 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, Button, TouchableWithoutFeedback, TouchableOpacity, Dimensions, Image, Linking} from "react-native";
 import { ScrollView } from 'react-native-gesture-handler';
 import { color } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useSelector} from 'react-redux'
 import colors from "../../constants/colors";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+
 
 const { width, height } = Dimensions.get("window");
 
 const HomeScreen = ({ navigation }) => {
+    
+    const journals = useSelector( state => state.journals);
+    
     const [moodAnalysisShown, setMoodAnalysisShown] = useState(false);
     const [wordCloudPrompted, setWordCloudPrompted] = useState(true);
     const [wordCloudShown, setWordCloudShown] = useState(false);
-    const diaryEntries = [
-        {
-          id: "1",
-          content:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          creationDate: "6 Jan 2021",
-        },
-        {
-          id: "2",
-          content:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          creationDate: "7 Jan 2021",
+    const [name, setName] = useState('');
+    
+    useEffect(()=>{
+        const fetchUserName = async () =>{
+            const userName = await AsyncStorage.getItem('userName');
+            setName(userName);
         }
-    ];
+        fetchUserName();
+    }, []);
+
+
     const url1 = "https://youtu.be/q-9kPks0IfE";
     const url2 = "https://youtu.be/a2giXO6eyuI";
     const urlimg1 = "https://img.youtube.com/vi/q-9kPks0IfE/0.jpg";
@@ -40,8 +43,8 @@ const HomeScreen = ({ navigation }) => {
 
                 <View style={styles.helloUserFlex}>
                     <View style={{width:"100%"}}>
-                        <Text style={{...styles.helloStyle}}>Hello Ishant</Text>
-                        <Text style={{color:colors.background, fontFamily:"Medium", fontSize:22, lineHeight:25, marginLeft:15, marginTop:2, opacity:0.8}}>How are you feeling today?</Text>
+                        <Text style={{...styles.helloStyle}}>Hello {name}</Text>
+                        <Text style={{color:colors.background, fontFamily:"Medium", fontSize:18, lineHeight:20, marginLeft:15, marginTop:2, opacity:0.8}}>How are you feeling today?</Text>
 
                         <TouchableOpacity activeOpacity={1} style={styles.addJournalButton} onPress={() => {navigation.navigate("NewWriting")}}>
                             <Ionicons name="add-sharp" size={32} color={colors.white} style={styles.addIcon}/>
@@ -83,7 +86,7 @@ const HomeScreen = ({ navigation }) => {
                                 marginRight: 8,
                                 }}
                             >
-                                19
+                                {journals.length}
                             </Text>
                             </View>
                         </View>

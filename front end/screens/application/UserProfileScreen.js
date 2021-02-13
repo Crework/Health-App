@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,13 +10,33 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import firebase from "firebase";
+import {useSelector} from 'react-redux';
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from "../../constants/colors";
 
 
 const UserProfileScreen = ({ navigation }) => {
-  console.log(new Date("2021-02-07T18:00:24.644Z").getDay());
+  
+  const journals = useSelector(state => state.journals);
+
+  const [userDetails, setUserDetails] = useState({
+    name: '',
+    email: ''
+  })
+
+  useEffect(()=>{
+    const getUserDetails = async () => {
+      const name = await AsyncStorage.getItem('userName');
+      const email = await AsyncStorage.getItem('userEmail');
+      setUserDetails({
+        name,
+        email
+      })
+    }
+    getUserDetails();
+  }, [])
+
 
   const onButtonPress = () => {
     firebase.auth().signOut()
@@ -61,8 +81,8 @@ const UserProfileScreen = ({ navigation }) => {
           </View>
         </View>
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>John Doe</Text>
-          <Text style={styles.userEmail}>johndoe00@gmail.com</Text>
+          <Text style={styles.userName}>{userDetails.name}</Text>
+          <Text style={styles.userEmail}>{userDetails.email}</Text>
         </View>
       </View>
       <TouchableOpacity
@@ -89,13 +109,13 @@ const UserProfileScreen = ({ navigation }) => {
           />
           <View style={styles.moreOptionInfo}>
             <Text style={styles.moreOptionText}>Total Journals</Text>
-            <Text style={[styles.moreOptionText, {fontFamily: "Bold"}]}>12</Text>
+            <Text style={[styles.moreOptionText, {fontFamily: "Bold"}]}>{journals.length}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={1}
           style={styles.moreOption}
-          onPress={() => navigation.navigate("ProfileSettings")}
+          onPress={() => navigation.navigate("ProfileSettings", {'name': userDetails.name, 'email': userDetails.email})}
         >
           <FontAwesome
             name="gear"

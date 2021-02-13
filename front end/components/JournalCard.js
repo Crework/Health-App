@@ -7,16 +7,30 @@ const { height, width } = Dimensions.get("window");
 
 const JournalCard = ({ journal, navigation }) => {
 
+
+  const convertTime = (hours) => {
+    let suffix = 'AM'
+    if(hours>=12){
+      if(hours!=24)
+        suffix = 'PM'
+      if(hours!=12)
+        hours = hours % 12;
+    }
+    return {
+      suffix,
+      hours: hours.toString()
+    }
+  }
+
   const day = new Date(journal.createdAt).getDay();
   const month = new Date(journal.createdAt).getMonth();
   const year = new Date(journal.createdAt).getFullYear();
   const date = new Date(journal.createdAt).getDate();
-  const hours = new Date(journal.createdAt).getHours();
-  const minutes = new Date(journal.createdAt).getMinutes();
+  const hour = convertTime(new Date(journal.createdAt).getHours());
+  const minute = new Date(journal.createdAt).getMinutes().toString();
 
   const daysOfTheWeek = [ 'Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const monthsOfTheYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', "August", 'September', 'October', 'November', 'December'];
-  console.log("here");
 
   return (
     <TouchableOpacity activeOpacity={0.7} style={styles.journalCardContainer} onPress={() => navigation.navigate("WritingDetail", {"id" : journal._id})}>
@@ -35,7 +49,9 @@ const JournalCard = ({ journal, navigation }) => {
         </View>
       </View>
       <View style={styles.timeStamp}>
-        <Text style={styles.timeText}>{hours}:{minutes}</Text>
+        <Text style={styles.timeText}>
+          {hour.hours.length===1 ? `0${hour.hours}` : hour.hours}:{ minute.length==1 ? `0${minute}` : minute} {hour.suffix}
+        </Text>
       </View>
     </TouchableOpacity>
   );

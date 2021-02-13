@@ -49,7 +49,7 @@ const WritingDetailScreen = ({ navigation, route }) => {
     }
     return {
       suffix,
-      hours
+      'hours': hours.toString()
     }
   }
 
@@ -65,7 +65,7 @@ const WritingDetailScreen = ({ navigation, route }) => {
         month: monthsOfTheYear[new Date(data.foundJournal.createdAt).getMonth()],
         year: new Date(data.foundJournal.createdAt).getFullYear(),
         hour: convertTime(new Date(data.foundJournal.createdAt).getHours()),
-        minute: new Date(data.foundJournal.createdAt).getMinutes()
+        minute: new Date(data.foundJournal.createdAt).getMinutes().toString()
       })
     }
     fetchJournalDetails();
@@ -104,6 +104,7 @@ const WritingDetailScreen = ({ navigation, route }) => {
           <View style={styles.date}>
             <View style={styles.row}>
               <Text style={styles.dateText}>
+                {dateInfo.date}
               </Text>
               <Text style={styles.monthText}>
                 {dateInfo.month}

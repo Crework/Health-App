@@ -69,7 +69,27 @@ router.get("/:userEmail/get-id", async (req,res) => {
         if(!foundUser){
           res.status(404).send();
         }else{
-          res.json({"_id":foundUser._id});
+          res.json({foundUser});
+        }
+      }
+    })
+  }catch(error){
+    console.log("getting user using email : ", error);
+  }
+});
+
+router.get("/:userId/get-user-details", async (req, res) => {
+  const userId = req.params.userId;
+  try{
+    User.findOne({_id: userId}, async (err, foundUser) => {
+      if(err){
+        console.log(err);
+        res.status(500).send();
+      }else {
+        if(!foundUser){
+          res.status(404).send();
+        }else{
+          res.json({foundUser});
         }
       }
     })

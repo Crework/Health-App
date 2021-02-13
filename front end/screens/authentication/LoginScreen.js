@@ -54,8 +54,10 @@ const LoginScreen = ({ navigation }) => {
       .then( async ()=>{
         console.log("here");
         const response = await fetch(`${env.url}/api/users/${email}/get-id`);
-        const id = await response.json()
-        await AsyncStorage.setItem("userId", id._id);
+        const {foundUser} = await response.json()
+        await AsyncStorage.setItem("userId", foundUser._id);
+        await AsyncStorage.setItem("userName", foundUser.name);
+        await AsyncStorage.setItem("userEmail", foundUser.email);
       })
       .then( ()=>{
         navigation.reset({
