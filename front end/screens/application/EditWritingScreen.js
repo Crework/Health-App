@@ -23,20 +23,61 @@ const { width, height } = Dimensions.get("window");
 
 const EditWritingScreen = ({ navigation, route }) => {
 
+  const daysOfTheWeek = [ 'Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthsOfTheYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', "August", 'September', 'October', 'November', 'December'];
+
   const dispatch = useDispatch();
   const {journal} = route.params; 
 
   const [content, setContent] = useState(journal.content);
   const [upperAreaHeight, setUpperAreaHeight] = useState(0);
+  const [dateInfo, setDateInfo] = useState({
+    date:'',
+    day:'',
+    month: '',
+    year: '',
+    hour: {
+      suffix: '',
+      hours: ''
+    },
+    minute: ''
+  });
+
+  const convertTime = (hours) => {
+    let suffix = 'AM'
+    if(hours>=12){
+      if(hours!=24)
+        suffix = 'PM'
+      if(hours!=12)
+        hours = hours % 12;
+    }
+    return {
+      suffix,
+      hours
+    }
+  }
+  
   let writingRef = useRef();
 
   useEffect(() => {
     writingRef?.focus();
+    setDateInfo({
+      date: new Date(journal.createdAt).getDate(),
+      day:daysOfTheWeek[new Date(journal.createdAt).getDay()],
+      month: monthsOfTheYear[new Date(journal.createdAt).getMonth()],
+      year: new Date(journal.createdAt).getFullYear(),
+      hour: convertTime(new Date(journal.createdAt).getHours()),
+      minute: new Date(journal.createdAt).getMinutes()
+    })
+    
   }, []);
 
   const onSaveButtonClicked = () => {
     dispatch(editJournal(journal._id, content));
-    navigation.replace("WritingDetail", {"id" : journal._id});
+    navigation.reset({
+      index : 0,
+      routes:[{name : "AllWritings"}]
+    });
   }
 
   return (
@@ -57,12 +98,12 @@ const EditWritingScreen = ({ navigation, route }) => {
         <View style={styles.dateInfo}>
           <View style={styles.date}>
             <View style={styles.row}>
-              <Text style={styles.dateText}>14</Text>
-              <Text style={styles.monthText}>February</Text>
+              <Text style={styles.dateText}>{dateInfo.date}</Text>
+              <Text style={styles.monthText}>{dateInfo.month}</Text>
             </View>
             <View style={styles.row}>
-              <Text style={styles.yearText}>2021,</Text>
-              <Text style={styles.dayText}>Sunday</Text>
+              <Text style={styles.yearText}>{dateInfo.year},</Text>
+              <Text style={styles.dayText}>{dateInfo.day}</Text>
             </View>
           </View>
           <View style={styles.iconContainer}>
@@ -75,7 +116,9 @@ const EditWritingScreen = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.timeInfo}>
-          <Text style={styles.timeText}>11:11 AM</Text>
+          <Text style={styles.timeText}>
+            {dateInfo.hour.hours.length==1 ? `0${dateInfo.hour.hours}` : dateInfo.hour.hours}:{ dateInfo.minute.length==1 ? `0${dateInfo.minute}` : dateInfo.minute} {dateInfo.hour.suffix}
+          </Text>
           <View style={styles.iconContainer}>
             <Ionicons
               name="time"

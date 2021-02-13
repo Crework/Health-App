@@ -60,7 +60,7 @@ const LoginScreen = ({ navigation }) => {
       .then( ()=>{
         navigation.reset({
           index:0,
-          routes: [{name:' '}]
+          routes: [{name:'ApplicationTabs'}]
         })
       })
       .catch((err)=>{
