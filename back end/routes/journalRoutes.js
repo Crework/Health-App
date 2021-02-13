@@ -18,15 +18,18 @@ router.get("/:userId/get-all", async (req, res, next) => {
 router.post("/:userId/add-one", async (req, res, next) => {
   const content = req.body.content;
   const userId = req.params.userId;
-  const process = spawn("python3", ["./ML/ML.py", content]);
   let needData = true;
+
+  const process = spawn("python3", ["./ML/paragraph.py", content]);
   process.stdout.on("data", async (data) => {
+    console.log(data.toString());
     needData = false;
     const newlyAddedJournal = new Journal({
         content, 
         createdBy: mongoose.Types.ObjectId(userId),
-        moodResult: data
+        moodResult: {"happy" : parseFloat(data.toString())}
     });
+    
     await newlyAddedJournal.save();
 
     try{
@@ -52,6 +55,14 @@ router.post("/:userId/add-one", async (req, res, next) => {
     return res.json({newlyAddedJournal});
   });
 
+  process.stderr.on( 'data', (data)=>{
+    console.log(data.toString());
+  } )
+
+  process.on('close', (code) => {
+    console.log("closed");
+  })
+
   if (!needData) res.send("Error happened");
 });
 
@@ -67,12 +78,12 @@ router.put("/:journalId/edit-one/", async (req, res) => {
         if(!foundJournal){
           res.status(404).send();
         }else{
-          const process = spawn("python3", ["./ML/ML.py", content]);
+          const process = spawn("python3", ["./ML/paragraph.py", content]);
           let needData = true;
           process.stdout.on("data", async (data) => {
             needData = false;
             foundJournal.content = content;
-            foundJournal.moodResult = data;
+            foundJournal.moodResult = {"happy":parseFloat(data.toString())};
             await foundJournal.save();
             return res.json({foundJournal});
           });
@@ -103,6 +114,23 @@ router.get("/:journalId/get-one/", async (req, res) => {
     console.log("Journal finding error", error);
   }
 });
+
+router.post("/create-word-cloud", async (req, res) => {
+  const content = req.body.content;
+  const fileName = req.body.fileName;
+  try{
+    const process = spawn("python3", ["./word cloud/wordcloud_for_journal.py", content, fileName]);
+    let needData = true;
+    process.stdout.on("data", async (data) => {
+      needData = false;
+      return res.json();
+    })
+    process.on('close', code => res.json({"code": code.toString()}));
+
+  } catch(error){
+    console.error();
+  }
+})
 
 
 module.exports = router;

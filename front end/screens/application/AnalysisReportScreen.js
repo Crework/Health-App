@@ -11,18 +11,45 @@ import {
   Image,
   TouchableOpacity,
   Keyboard,
-  Dimensions,
+  Dimensions
 } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Calendar } from "react-native-calendars";
-
+import env from '../../env';
 import colors from "../../constants/colors";
+import { useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const { width, _ } = Dimensions.get("window");
 
 const AnalysisReportScreen = ({ navigation }) => {
+
+  const [fileName, setFileName] = useState('');
+  const journals = useSelector(state => state.journals);
+  const [wordCloudGenerated, setWordCloudGenerated] = useState(false);
+
+  const getWordsFromJournal = () => {
+    const end = journals.length>7 ? 8 : (journals.length);
+    return journals.slice(-1,end).map(journal => journal.content).join(' ');
+  } 
+
+  const onWordCloudPressed = async () =>{
+    setWordCloudShown(true);
+    const name = await AsyncStorage.getItem('userName');
+    setFileName(name);
+    const data = getWordsFromJournal();
+    console.log(data,name);
+    await fetch(`${env.url}/api/journals/create-word-cloud`, {
+      method:'POST',
+      headers: {'Content-Type' : 'application/json'},
+      body : JSON.stringify({content:data, fileName:name})
+    });
+    setWordCloudGenerated(true);
+  }
+
   const [wordCloudShown, setWordCloudShown] = useState(false);
   const [chartAreaWidth, setChartAreaWidth] = useState(0);
   const [chartAreaHeight, setChartAreaHeight] = useState(0);
@@ -284,6 +311,89 @@ const AnalysisReportScreen = ({ navigation }) => {
             </View>
           </LinearGradient>
         </View>
+
+        
+        <TouchableOpacity
+          activeOpacity={1}
+          style={styles.wordCloudCard}
+          onPress={() => {
+            setWordCloudShown(false);
+          }}
+        >
+          <View style={styles.row}>
+            <MaterialIcons
+              name="amp-stories"
+              color={colors.darkGrey}
+              size={20}
+              style={{ marginRight: 8 }}
+            />
+
+            <View style={styles.rowInfo}>
+              <Text
+                style={{
+                  fontFamily: "Medium",
+                  color: colors.lightBlack,
+                  letterSpacing: 0.4,
+                }}
+              >
+                Word Cloud
+              </Text>
+              <MaterialIcons
+                name={
+                  wordCloudShown ? "keyboard-arrow-up" : "keyboard-arrow-down"
+                }
+                color={colors.lightBlack}
+                size={20}
+                style={{ marginRight: 8 }}
+              />
+            </View>
+          </View>
+          <View style={styles.wordCloudPrompt}>
+            <Text
+              style={{
+                fontFamily: "Regular",
+                color: colors.darkGrey,
+                fontSize: 13,
+                letterSpacing: 0.4,
+                lineHeight: 16,
+                marginBottom: 8,
+              }}
+            >
+              World Cloud will generate a PNG/JPG Image consisting the most used
+              words in your journal. You can create multiple word clouds by
+              editing your text and regenerating.
+            </Text>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => {
+                onWordCloudPressed();
+              }}
+              style={styles.tryButtonContainer}
+            >
+              <Text
+                style={{
+                  fontFamily: "Medium",
+                  color: colors.white,
+                  fontSize: 16,
+                  letterSpacing: 1,
+                }}
+              >
+                Try Now
+              </Text>
+            </TouchableOpacity>
+          </View>
+          
+          {wordCloudShown && <View style={styles.wordCloud}>
+                {wordCloudGenerated && <Image source = {{uri: `${env.url}/image/data/${fileName}.png`}}
+                        style = {styles.wordCloudImage}
+                        width = {width-48}
+                        height = {200}
+                />}
+          </View>}
+        </TouchableOpacity>
+
+
+
         <View style={styles.analysisCard}>
           <View style={[styles.analysisCardHeader, {marginVertical: 0, borderBottomRightRadius: 0, borderBottomLeftRadius: 0}]}>
             <Text
@@ -336,6 +446,14 @@ const styles = StyleSheet.create({
   analysisCard: {
     width: "100%",
     marginVertical: 12,
+  },
+  wordCloudCard: {
+    width: "100%",
+    backgroundColor: colors.differentGreyBackground,
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    marginVertical: 12
   },
   analysisCardHeader: {
     width: "100%",
@@ -394,6 +512,42 @@ const styles = StyleSheet.create({
     fontFamily: "Medium",
     letterSpacing: 0.4,
     color: colors.darkGrey,
+  },
+  row: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  rowInfo: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  wordCloudPrompt: {
+    padding: 8,
+    width: "100%",
+    alignItems: "center",
+  },
+  tryButtonContainer: {
+    padding: 8,
+    borderRadius: 4,
+    backgroundColor: colors.primary,
+    width: "30%",
+    alignItems: "center",
+  },
+  wordCloud: {
+    justifyContent:"center",
+    alignItems:"center",
+    marginTop: 12,
+    width: "100%",
+    borderRadius: 4,
+  },
+  wordCloudImage: {
+    borderRadius:12,
+    width:width-48,
+    height:200,
+    resizeMode: "contain"
   },
 });
 

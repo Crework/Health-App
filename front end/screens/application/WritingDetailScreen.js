@@ -91,7 +91,7 @@ const WritingDetailScreen = ({ navigation, route }) => {
           style={styles.editLogo}
         />
          <Ionicons
-          onPress={() => navigation.navigate("WritingAnalysis")}
+          onPress={() => navigation.navigate("WritingAnalysis", {content, dateInfo})}
           name="analytics-outline"
           size={28}
           color="black"

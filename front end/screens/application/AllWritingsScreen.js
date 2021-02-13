@@ -26,19 +26,8 @@ const AllWritingsScreen = ({ navigation }) => {
   const journals = useSelector(state => state.journals );
   const dispatch = useDispatch();
   
-  useEffect(()=> {
-    const getUserId = async () => {
-      const userId = await AsyncStorage.getItem("userId");
-      const response = await fetch(`${env.url}/api/journals/${userId}/get-all`);
-      const data = await response.json();
-      console.log(data.journals[0].createdAt);
-      dispatch(getAllJournals(data.journals));
-    }
-    getUserId();
-  },[])
-
   const onPlusButtonClicked = () => {
-    if(journals[journals.length-1].createdAt.split('T')[0] === new Date().toISOString().split('T')[0])
+    if(journals.length && journals[journals.length-1].createdAt.split('T')[0] === new Date().toISOString().split('T')[0])
       navigation.navigate("EditWriting", {journal: journals[journals.length -1]});
     else navigation.navigate('NewWriting');
   }

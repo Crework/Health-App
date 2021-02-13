@@ -13,7 +13,7 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(logger("dev"));
-
+app.use('/image',express.static('./word cloud'));
 db(); 
 
 app.use((req, res, next) => {
@@ -28,6 +28,7 @@ app.use((req, res, next) => {
 
 app.use("/api/journals", journalRoutes);
 app.use("/api/users", userRoutes);
+
 
 const PORT = process.env.port || 3000;
 

@@ -3,28 +3,37 @@ import {View, Text, StyleSheet, Button, TouchableWithoutFeedback, TouchableOpaci
 import { ScrollView } from 'react-native-gesture-handler';
 import { color } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useSelector} from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux'
 import colors from "../../constants/colors";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-
+import env from '../../env';
+import {getAllJournals} from "../../redux/actions";
 
 const { width, height } = Dimensions.get("window");
 
 const HomeScreen = ({ navigation }) => {
     
     const journals = useSelector( state => state.journals);
-    
+    const dispatch = useDispatch();
+
     const [moodAnalysisShown, setMoodAnalysisShown] = useState(false);
     const [wordCloudPrompted, setWordCloudPrompted] = useState(true);
     const [wordCloudShown, setWordCloudShown] = useState(false);
     const [name, setName] = useState('');
     
     useEffect(()=>{
-        const fetchUserName = async () =>{
+        const getUserId = async () => {
+            const userId = await AsyncStorage.getItem("userId");
+            const response = await fetch(`${env.url}/api/journals/${userId}/get-all`);
+            const data = await response.json();
+            if(!data.error)
+                dispatch(getAllJournals(data.journals));
+            else
+                dispatch(getAllJournals([]))
             const userName = await AsyncStorage.getItem('userName');
             setName(userName);
         }
-        fetchUserName();
+        getUserId();
     }, []);
 
 
@@ -56,157 +65,6 @@ const HomeScreen = ({ navigation }) => {
                 style={styles.scrollStyle}
                 showsVerticalScrollIndicator={false}
                 >
-                <View style={styles.recentMoodContainer}>
-                    <Text style={styles.headingStyle}>Know Your Mood</Text>
-                
-
-                    <View style={styles.analysisCard}>
-                        <View style={styles.row}>
-                            <MaterialIcons
-                            name="text-snippet"
-                            color={colors.darkGrey}
-                            size={20}
-                            style={{ marginRight: 8 }}
-                            />
-                            <View style={styles.rowInfo}>
-                            <Text
-                                style={{
-                                fontFamily: "Medium",
-                                color: colors.lightBlack,
-                                letterSpacing: 0.4,
-                                }}
-                            >
-                                Total Journals
-                            </Text>
-                            <Text
-                                style={{
-                                fontFamily: "Medium",
-                                color: colors.lightBlack,
-                                letterSpacing: 0.4,
-                                marginRight: 8,
-                                }}
-                            >
-                                {journals.length}
-                            </Text>
-                            </View>
-                        </View>
-                        </View>
-
-                        <TouchableOpacity
-                        activeOpacity={1}
-                        style={styles.analysisCard}
-                        onPress={() => {
-                            setWordCloudPrompted(!wordCloudPrompted);
-                            setWordCloudShown(false);
-                        }}
-                        >
-                        <View style={styles.row}>
-                            <MaterialIcons
-                            name="amp-stories"
-                            color={colors.darkGrey}
-                            size={20}
-                            style={{ marginRight: 8 }}
-                            />
-
-                            <View style={styles.rowInfo}>
-                            <Text
-                                style={{
-                                fontFamily: "Medium",
-                                color: colors.lightBlack,
-                                letterSpacing: 0.4,
-                                }}
-                            >
-                                Word Cloud
-                            </Text>
-                            <MaterialIcons
-                                name={
-                                wordCloudPrompted
-                                    ? "keyboard-arrow-up"
-                                    : "keyboard-arrow-down"
-                                }
-                                color={colors.lightBlack}
-                                size={20}
-                                style={{ marginRight: 8 }}
-                            />
-                            </View>
-                        </View>
-                        {wordCloudPrompted && (
-                            <View style={styles.wordCloudPrompt}>
-                            <Text
-                                style={{
-                                fontFamily: "Regular",
-                                color: colors.darkGrey,
-                                fontSize: 13,
-                                letterSpacing: 0.4,
-                                lineHeight: 16,
-                                marginBottom: 8,
-                                }}
-                            >
-                                World Cloud will generate a PNG/JPG Image consisting the most
-                                used words in your journal. You can create multiple word clouds
-                                by editing your text and regenerating.
-                            </Text>
-                            <TouchableOpacity
-                                activeOpacity={0.8}
-                                onPress={() => {
-                                setWordCloudShown(true);
-                                }}
-                                style={styles.tryButtonContainer}
-                            >
-                                <Text
-                                style={{
-                                    fontFamily: "Medium",
-                                    color: colors.white,
-                                    fontSize: 16,
-                                    letterSpacing: 1,
-                                }}
-                                >
-                                Try Now
-                                </Text>
-                            </TouchableOpacity>
-                            </View>
-                        )}
-                        {wordCloudShown && <View style={styles.wordCloud}></View>}
-                        </TouchableOpacity>
-                        
-                        <TouchableOpacity
-                        activeOpacity={1}
-                        style={styles.analysisCard}
-                        onPress={() => setMoodAnalysisShown(!moodAnalysisShown)}
-                        >
-                        <View style={styles.row}>
-                            <Ionicons
-                            name="analytics-outline"
-                            color={colors.darkGrey}
-                            size={20}
-                            style={{ marginRight: 8 }}
-                            />
-                            <View style={styles.rowInfo}>
-                            <Text
-                                style={{
-                                fontFamily: "Medium",
-                                color: colors.lightBlack,
-                                letterSpacing: 0.4,
-                                }}
-                            >
-                                Mood Analysis
-                            </Text>
-                            <MaterialIcons
-                                name={
-                                moodAnalysisShown
-                                    ? "keyboard-arrow-up"
-                                    : "keyboard-arrow-down"
-                                }
-                                color={colors.lightBlack}
-                                size={20}
-                                style={{ marginRight: 8 }}
-                            />
-                            </View>
-                        </View>
-                        {moodAnalysisShown && <View style={styles.moodAnalysis}></View>}
-                        </TouchableOpacity>
-                    </View>
-                
                 <View style={styles.musicContainer}>
                     <Text style={styles.headingStyle}>Music For You</Text>
                     
