@@ -14,18 +14,71 @@ import {
   Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from "../../constants/colors";
+import {useDispatch} from 'react-redux';
+import { editJournal } from "../../redux/actions";
 
 const { width, height } = Dimensions.get("window");
 
-const EditWritingScreen = ({ navigation }) => {
+const EditWritingScreen = ({ navigation, route }) => {
+
+  const daysOfTheWeek = [ 'Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthsOfTheYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', "August", 'September', 'October', 'November', 'December'];
+
+  const dispatch = useDispatch();
+  const {journal} = route.params; 
+
+  const [content, setContent] = useState(journal.content);
   const [upperAreaHeight, setUpperAreaHeight] = useState(0);
+  const [dateInfo, setDateInfo] = useState({
+    date:'',
+    day:'',
+    month: '',
+    year: '',
+    hour: {
+      suffix: '',
+      hours: ''
+    },
+    minute: ''
+  });
+
+  const convertTime = (hours) => {
+    let suffix = 'AM'
+    if(hours>=12){
+      if(hours!=24)
+        suffix = 'PM'
+      if(hours!=12)
+        hours = hours % 12;
+    }
+    return {
+      suffix,
+      'hours': hours.toString()
+    }
+  }
+  
   let writingRef = useRef();
 
   useEffect(() => {
     writingRef?.focus();
+    setDateInfo({
+      date: new Date(journal.createdAt).getDate(),
+      day:daysOfTheWeek[new Date(journal.createdAt).getDay()],
+      month: monthsOfTheYear[new Date(journal.createdAt).getMonth()],
+      year: new Date(journal.createdAt).getFullYear(),
+      hour: convertTime(new Date(journal.createdAt).getHours()),
+      minute: new Date(journal.createdAt).getMinutes().toString()
+    })
+    
   }, []);
+
+  const onSaveButtonClicked = () => {
+    dispatch(editJournal(journal._id, content));
+    navigation.reset({
+      index : 0,
+      routes:[{name : "AllWritings"}]
+    });
+  }
 
   return (
     <View style={styles.screen}>
@@ -37,7 +90,7 @@ const EditWritingScreen = ({ navigation }) => {
           color="black"
           style={styles.backLogo}
         />
-        <TouchableOpacity activeOpacity={1} style={styles.saveButtonContainer} onPress={() => navigation.goBack()}>
+        <TouchableOpacity activeOpacity={1} style={styles.saveButtonContainer} onPress={onSaveButtonClicked}>
             <Text style={styles.saveButton}>Save</Text>
         </TouchableOpacity>
       </View>
@@ -45,12 +98,12 @@ const EditWritingScreen = ({ navigation }) => {
         <View style={styles.dateInfo}>
           <View style={styles.date}>
             <View style={styles.row}>
-              <Text style={styles.dateText}>14</Text>
-              <Text style={styles.monthText}>February</Text>
+              <Text style={styles.dateText}>{dateInfo.date}</Text>
+              <Text style={styles.monthText}>{dateInfo.month}</Text>
             </View>
             <View style={styles.row}>
-              <Text style={styles.yearText}>2021,</Text>
-              <Text style={styles.dayText}>Sunday</Text>
+              <Text style={styles.yearText}>{dateInfo.year},</Text>
+              <Text style={styles.dayText}>{dateInfo.day}</Text>
             </View>
           </View>
           <View style={styles.iconContainer}>
@@ -63,7 +116,9 @@ const EditWritingScreen = ({ navigation }) => {
           </View>
         </View>
         <View style={styles.timeInfo}>
-          <Text style={styles.timeText}>11:11 AM</Text>
+          <Text style={styles.timeText}>
+            {dateInfo.hour.hours.length==1 ? `0${dateInfo.hour.hours}` : dateInfo.hour.hours}:{ dateInfo.minute.length==1 ? `0${dateInfo.minute}` : dateInfo.minute} {dateInfo.hour.suffix}
+          </Text>
           <View style={styles.iconContainer}>
             <Ionicons
               name="time"
@@ -80,6 +135,8 @@ const EditWritingScreen = ({ navigation }) => {
           multiline={true}
           scrollEnabled={true}
           blurOnSubmit={true}
+          value = {content}
+          onChangeText = {text => setContent(text)}
           returnKeyType="done"
           style={styles.input}
           ref={(writing) => (writingRef = writing)}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,11 +9,48 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
+import firebase from "firebase";
+import {useSelector} from 'react-redux';
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import firebase from 'firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from "../../constants/colors";
 
+
 const UserProfileScreen = ({ navigation }) => {
+  
+  const journals = useSelector(state => state.journals);
+
+  const [userDetails, setUserDetails] = useState({
+    name: '',
+    email: ''
+  })
+
+  useEffect(()=>{
+    const getUserDetails = async () => {
+      const name = await AsyncStorage.getItem('userName');
+      const email = await AsyncStorage.getItem('userEmail');
+      setUserDetails({
+        name,
+        email
+      })
+    }
+    getUserDetails();
+  }, [])
+
+
+  const onButtonPress = () => {
+    firebase.auth().signOut()
+    .then(()=>{
+      navigation.reset({
+        index : 0,
+        routes : [{name:'AuthenticationStack'}]
+      })
+    })
+    .catch((err)=>{
+      console.log(err.message);
+    })
+  }
+
   return (
     <View style={styles.screen}>
       <View style={styles.profileHeader}>
@@ -44,8 +81,8 @@ const UserProfileScreen = ({ navigation }) => {
           </View>
         </View>
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>John Doe</Text>
-          <Text style={styles.userEmail}>johndoe00@gmail.com</Text>
+          <Text style={styles.userName}>{userDetails.name}</Text>
+          <Text style={styles.userEmail}>{userDetails.email}</Text>
         </View>
       </View>
       <TouchableOpacity
@@ -72,13 +109,13 @@ const UserProfileScreen = ({ navigation }) => {
           />
           <View style={styles.moreOptionInfo}>
             <Text style={styles.moreOptionText}>Total Journals</Text>
-            <Text style={[styles.moreOptionText, {fontFamily: "Bold"}]}>12</Text>
+            <Text style={[styles.moreOptionText, {fontFamily: "Bold"}]}>{journals.length}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={1}
           style={styles.moreOption}
-          onPress={() => navigation.navigate("ProfileSettings")}
+          onPress={() => navigation.navigate("ProfileSettings", {'name': userDetails.name, 'email': userDetails.email})}
         >
           <FontAwesome
             name="gear"
@@ -95,42 +132,9 @@ const UserProfileScreen = ({ navigation }) => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={1} style={styles.moreOption} onPress={() => navigation.navigate("HelpAndSupport")}>
-          <FontAwesome
-            name="question-circle"
-            color={colors.darkGrey}
-            size={18}
-            style={styles.optionIcon}
-          />
-          <View style={styles.moreOptionInfo}>
-            <Text style={styles.moreOptionText}>Help &amp; Support</Text>
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={22}
-              color={colors.lightBlack}
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={1} style={styles.moreOption} onPress={() => navigation.navigate("PrivacyPolicy")}>
-          <Ionicons
-            name="lock-closed"
-            color={colors.darkGrey}
-            size={18}
-            style={styles.optionIcon}
-          />
-          <View style={styles.moreOptionInfo}>
-            <Text style={styles.moreOptionText}>Privacy Policy</Text>
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={22}
-              color={colors.lightBlack}
-            />
-          </View>
-        </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={1}
           style={styles.moreOption}
-          onPress={() => navigation.navigate("ApplicationInfo")}
         >
           <Ionicons
             name="information-circle"
@@ -140,21 +144,13 @@ const UserProfileScreen = ({ navigation }) => {
           />
           <View style={styles.moreOptionInfo}>
             <Text style={styles.moreOptionText}>App Info</Text>
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={22}
-              color={colors.lightBlack}
-            />
+            <Text style={[styles.moreOptionText, {color: colors.darkGrey}]}>v1.0.0</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={1}
           style={styles.moreOption}
-          onPress={() =>
-            firebase.auth().signOut().then(()=>
-            navigation.replace("AuthenticationStack", { screen: "Login" })
-          )
-          }
+          onPress={() => onButtonPress()}
         >
           <FontAwesome
             name="sign-out"

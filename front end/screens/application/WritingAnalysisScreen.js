@@ -20,25 +20,33 @@ import colors from "../../constants/colors";
 
 const { width, _ } = Dimensions.get("window");
 
-const emotionsData = [
-  {
-    name: "Happy",
-    emotionQuotient: 160,
-    color: colors.happyColor,
-  },
-  {
-    name: "Sad",
-    emotionQuotient: 42,
-    color: colors.sadColor,
-  },
-];
-
 const chartConfig = {
   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
 };
 
-const WritingAnalysisScreen = ({ navigation }) => {
-  const [wordCloudShown, setWordCloudShown] = useState(false);
+const WritingAnalysisScreen = ({ navigation, route }) => {
+
+  const {content, dateInfo} = route.params;
+  const [emotionsData, setEmotionsData] = useState([
+    {
+      name: "Happy",
+      emotionQuotient: null,
+      color: colors.happyColor,
+    },
+    {
+      name: "Sad",
+      emotionQuotient: null,
+      color: colors.sadColor,
+    }]
+  );
+
+  useEffect(()=>{
+    setEmotionsData([{...emotionsData[0],"emotionQuotient":content.moodResult.happy},
+                    {...emotionsData[1],"emotionQuotient":1-content.moodResult.happy}
+                  ])
+    
+  }, [])
+
   const [chartAreaWidth, setChartAreaWidth] = useState(0);
   const [chartAreaHeight, setChartAreaHeight] = useState(0);
   return (
@@ -58,12 +66,12 @@ const WritingAnalysisScreen = ({ navigation }) => {
           <View style={styles.dateInfo}>
             <View style={styles.date}>
               <View style={styles.row}>
-                <Text style={styles.dateText}>14</Text>
-                <Text style={styles.monthText}>February</Text>
+                <Text style={styles.dateText}>{dateInfo.date}</Text>
+                <Text style={styles.monthText}>{dateInfo.month}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.yearText}>2021,</Text>
-                <Text style={styles.dayText}>Sunday</Text>
+                <Text style={styles.yearText}>{dateInfo.year},</Text>
+                <Text style={styles.dayText}>{dateInfo.day}</Text>
               </View>
             </View>
             <View style={styles.iconContainer}>
@@ -76,7 +84,9 @@ const WritingAnalysisScreen = ({ navigation }) => {
             </View>
           </View>
           <View style={styles.timeInfo}>
-            <Text style={styles.timeText}>11:11 AM</Text>
+            <Text style={styles.timeText}>
+              {dateInfo.hour.hours.length==1 ? `0${dateInfo.hour.hours}` : dateInfo.hour.hours}:{ dateInfo.minute.length==1 ? `0${dateInfo.minute}` : dateInfo.minute} {dateInfo.hour.suffix}
+            </Text>
             <View style={styles.iconContainer}>
               <Ionicons
                 name="time"
@@ -115,19 +125,12 @@ const WritingAnalysisScreen = ({ navigation }) => {
                   marginRight: 8,
                 }}
               >
-                19
+                {content.content.split('.').length}
               </Text>
             </View>
           </View>
         </View>
-
-        <TouchableOpacity
-          activeOpacity={1}
-          style={styles.analysisCard}
-          onPress={() => {
-            setWordCloudShown(false);
-          }}
-        >
+        <TouchableOpacity activeOpacity={1} style={styles.analysisCard}>
           <View style={styles.row}>
             <Ionicons
               name="analytics-outline"
@@ -212,77 +215,6 @@ const WritingAnalysisScreen = ({ navigation }) => {
           </View>
         </TouchableOpacity>
         
-        <TouchableOpacity
-          activeOpacity={1}
-          style={styles.analysisCard}
-          onPress={() => {
-            setWordCloudShown(false);
-          }}
-        >
-          <View style={styles.row}>
-            <MaterialIcons
-              name="amp-stories"
-              color={colors.darkGrey}
-              size={20}
-              style={{ marginRight: 8 }}
-            />
-
-            <View style={styles.rowInfo}>
-              <Text
-                style={{
-                  fontFamily: "Medium",
-                  color: colors.lightBlack,
-                  letterSpacing: 0.4,
-                }}
-              >
-                Word Cloud
-              </Text>
-              <MaterialIcons
-                name={
-                  wordCloudShown ? "keyboard-arrow-up" : "keyboard-arrow-down"
-                }
-                color={colors.lightBlack}
-                size={20}
-                style={{ marginRight: 8 }}
-              />
-            </View>
-          </View>
-          <View style={styles.wordCloudPrompt}>
-            <Text
-              style={{
-                fontFamily: "Regular",
-                color: colors.darkGrey,
-                fontSize: 13,
-                letterSpacing: 0.4,
-                lineHeight: 16,
-                marginBottom: 8,
-              }}
-            >
-              World Cloud will generate a PNG/JPG Image consisting the most used
-              words in your journal. You can create multiple word clouds by
-              editing your text and regenerating.
-            </Text>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => {
-                setWordCloudShown(true);
-              }}
-              style={styles.tryButtonContainer}
-            >
-              <Text
-                style={{
-                  fontFamily: "Medium",
-                  color: colors.white,
-                  fontSize: 16,
-                  letterSpacing: 1,
-                }}
-              >
-                Try Now
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {wordCloudShown && <View style={styles.wordCloud}></View>}
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );

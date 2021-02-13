@@ -3,18 +3,16 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
-import  * as firebase  from "firebase";
-import {Provider} from "react-redux";
-
+import * as firebase from "firebase";
+import { Provider } from "react-redux";
 import { ActivityIndicator, View } from "react-native";
+
 import AuthenticationStack from "./navigation/AuthenticationStack";
 import ApplicationTabs from "./navigation/ApplicationTabs";
 import { firebaseConfig } from "./firebaseConfig";
-import store from "./redux/index";
-
+import store from "./redux";
 
 const Stack = createStackNavigator();
-
 
 const loadFonts = () => {
   return Font.loadAsync({
@@ -25,53 +23,56 @@ const loadFonts = () => {
     Bold: require("./assets/fonts/Inter-Bold.ttf"),
     Black: require("./assets/fonts/Inter-Black.ttf"),
     Logo: require("./assets/fonts/PottaOne-Regular.ttf"),
-    Name:require("./assets/fonts/YuseiMagic-Regular.ttf"),
-    Quote:require("./assets/fonts/Pacifico-Regular.ttf")
+    Name: require("./assets/fonts/YuseiMagic-Regular.ttf"),
+    Quote: require("./assets/fonts/Pacifico-Regular.ttf"),
   });
 };
-
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [loggedIn, setLoggedInState] = useState(null);
 
-  const checkIfLoggedIn = () =>{
-    firebase.auth().onAuthStateChanged((user)=>{
-      if(user){
-        console.log(user);
+  const checkIfLoggedIn = () => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
         setLoggedInState(true);
-      }
-      else{
+      } else {
         setLoggedInState(false);
       }
-    })
-  }
+    });
+  };
 
-  useEffect(() =>{
-    if(!firebase.apps.length){
+  useEffect(() => {
+    if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
     checkIfLoggedIn();
+<<<<<<< HEAD
 
   })
+=======
+  });
+>>>>>>> 77af57aca85ad3caa8a23da4b28b494c152c6458
 
   if (!fontsLoaded) {
     return (
       <AppLoading
         startAsync={loadFonts}
-        onFinish={() => {console.log("loaded successfully"); setFontsLoaded(true)}}
+        onFinish={() => {
+          console.log("loaded successfully");
+          setFontsLoaded(true);
+        }}
         onError={(err) => console.log(err)}
       />
     );
   }
 
-  if(loggedIn==null) return <AppLoading/>
-
-  console.log(loggedIn)
+  if (loggedIn == null) return <AppLoading />;
 
   return (
     <Provider store={store}>
       <NavigationContainer>
+<<<<<<< HEAD
       <Stack.Navigator headerMode="none" initialRouteName={ loggedIn==false ? "AuthenticationStack": "ApplicationTabs"}>
         <Stack.Screen
           name="AuthenticationStack"
@@ -83,6 +84,21 @@ export default function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+=======
+        <Stack.Navigator
+          headerMode="none"
+          initialRouteName={
+            loggedIn == false ? "AuthenticationStack" : "ApplicationTabs"
+          }
+        >
+          <Stack.Screen
+            name="AuthenticationStack"
+            component={AuthenticationStack}
+          />
+          <Stack.Screen name="ApplicationTabs" component={ApplicationTabs} />
+        </Stack.Navigator>
+      </NavigationContainer>
+>>>>>>> 77af57aca85ad3caa8a23da4b28b494c152c6458
     </Provider>
   );
 }

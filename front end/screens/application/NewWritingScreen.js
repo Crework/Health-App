@@ -14,18 +14,74 @@ import {
   Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import {useDispatch} from 'react-redux';
 
 import colors from "../../constants/colors";
+import env from "../../env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {addNewJournal} from "../../redux/actions";
 
 const { width, height } = Dimensions.get("window");
 
 const NewWritingScreen = ({ navigation }) => {
+
+  const daysOfTheWeek = [ 'Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthsOfTheYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', "August", 'September', 'October', 'November', 'December'];
+  
+  const convertTime = (hours) => {
+    let suffix = 'AM'
+    if(hours>=12){
+      if(hours!=24)
+        suffix = 'PM'
+      if(hours!=12)
+        hours = hours % 12;
+    }
+    return {
+      suffix,
+      'hours':hours.toString()
+    }
+  }
+  const [content, setContent] = useState('');
+  const [dateInfo, setDateInfo] = useState({
+    date: new Date().getDate(),
+    day:daysOfTheWeek[new Date().getDay()],
+    month: monthsOfTheYear[new Date().getMonth()],
+    year: new Date().getFullYear(),
+    hour: convertTime(new Date().getHours()),
+    minute: new Date().getMinutes().toString()
+  });
+
   const [upperAreaHeight, setUpperAreaHeight] = useState(0);
   let writingRef = useRef();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     writingRef?.focus();
+    const id = setInterval(()=>{setDateInfo(
+      {
+        date: new Date().getDate(),
+        day:daysOfTheWeek[new Date().getDay()],
+        month: monthsOfTheYear[new Date().getMonth()],
+        year: new Date().getFullYear(),
+        hour: convertTime(new Date().getHours()),
+        minute: new Date().getMinutes().toString()
+      })
+    }, 1000);
+    return () => {
+      clearInterval(id)
+    }
+
   }, []);
+
+  // useEffect(()=>{
+
+  // }, [])
+
+  const onSaveButtonClicked = async () => {
+    const userId = await AsyncStorage.getItem('userId');
+    dispatch(addNewJournal(userId, content));
+    navigation.replace("AllWritings");
+  }
 
   return (
     <View style={styles.screen}>
@@ -37,7 +93,7 @@ const NewWritingScreen = ({ navigation }) => {
           color="black"
           style={styles.backLogo}
         />
-         <TouchableOpacity activeOpacity={1} style={styles.saveButtonContainer} onPress={() => navigation.goBack()}>
+         <TouchableOpacity activeOpacity={1} style={styles.saveButtonContainer} onPress={onSaveButtonClicked}>
             <Text style={styles.saveButton}>Save</Text>
         </TouchableOpacity>
       </View>
@@ -45,12 +101,12 @@ const NewWritingScreen = ({ navigation }) => {
         <View style={styles.dateInfo}> 
           <View style={styles.date}>
             <View style={styles.row}>
-              <Text style={styles.dateText}>14</Text>
-              <Text style={styles.monthText}>February</Text>
+              <Text style={styles.dateText}>{dateInfo.date}</Text>
+              <Text style={styles.monthText}>{dateInfo.month}</Text>
             </View>
             <View style={styles.row}>
-              <Text style={styles.yearText}>2021,</Text>
-              <Text style={styles.dayText}>Sunday</Text>
+              <Text style={styles.yearText}>{dateInfo.year},</Text>
+              <Text style={styles.dayText}>{dateInfo.day}</Text>
             </View>
           </View>
           <View style={styles.iconContainer}>
@@ -63,7 +119,10 @@ const NewWritingScreen = ({ navigation }) => {
           </View>
         </View>
         <View style={styles.timeInfo}>
-          <Text style={styles.timeText}>11:11 AM</Text>
+          <Text style={styles.timeText}>
+            {dateInfo.hour.hours.length==1 ? `0${dateInfo.hour.hours}` : dateInfo.hour.hours}:{ dateInfo.minute.length==1 ? `0${dateInfo.minute}` : dateInfo.minute} {dateInfo.hour.suffix}
+          </Text>
+
           <View style={styles.iconContainer}>
             <Ionicons
               name="time"
@@ -80,6 +139,8 @@ const NewWritingScreen = ({ navigation }) => {
           multiline={true}
           scrollEnabled={true}
           blurOnSubmit={true}
+          value = {content}
+          onChangeText = {(text)=>setContent(text)}
           returnKeyType="done"
           style={styles.input}
           ref={(writing) => (writingRef = writing)}

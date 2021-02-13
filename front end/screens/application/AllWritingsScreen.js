@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,13 +11,40 @@ import {
   TouchableWithoutFeedback,
   TextInput,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from "react-redux";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import JournalCard from "../../components/JournalCard";
-import {journals} from "../../Data/journalsData";
+import {getAllJournals} from "../../redux/actions";
+import env from "../../env";
+
 
 import colors from "../../constants/colors";
 
+
 const AllWritingsScreen = ({ navigation }) => {
+  const journals = useSelector(state => state.journals );
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    const getUserId = async () => {
+        const userId = await AsyncStorage.getItem("userId");
+        const response = await fetch(`${env.url}/api/journals/${userId}/get-all`);
+        const data = await response.json();
+        if(!data.error)
+            dispatch(getAllJournals(data.journals));
+        else
+            dispatch(getAllJournals([]))
+    }
+    getUserId();
+}, []);
+  
+  const onPlusButtonClicked = () => {
+    if(journals.length && journals[journals.length-1].createdAt.split('T')[0] === new Date().toISOString().split('T')[0])
+      navigation.navigate("EditWriting", {journal: journals[journals.length -1]});
+    else navigation.navigate('NewWriting');
+  }
+
   return (
     <View style={styles.screen}>
       <View style={styles.searchBoxContainer}>
@@ -29,19 +56,18 @@ const AllWritingsScreen = ({ navigation }) => {
         data={journals}
         centerContent
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => {
-          console.log(item.id);
           return <JournalCard journal={item} navigation={navigation}/>;
         }}
       />
-      <TouchableOpacity activeOpacity={1} style={styles.addJournalButton} onPress={() => {navigation.navigate("NewWriting")}}>
+      <TouchableOpacity activeOpacity={1} style={styles.addJournalButton} onPress={() => {onPlusButtonClicked()}}>
           <Ionicons name="add-sharp" size={32} color={colors.white} style={styles.addIcon}/>
       </TouchableOpacity>
     </View>
   );
 };
-
+ 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,

@@ -11,6 +11,7 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import firebase from "firebase";
 
@@ -18,6 +19,7 @@ import GoogleIcon from "../../assets/images/google.png";
 import FacebookIcon from "../../assets/images/facebook.png";
 
 import colors from "../../constants/colors";
+import env from '../../env';
 
 const RegisterScreen = ({ navigation }) => {
   let fullNameRef = useRef();
@@ -26,6 +28,7 @@ const RegisterScreen = ({ navigation }) => {
 
   useEffect(() => {
     fullNameRef?.focus();
+    console.log(env.url);
   }, []);
 
 
@@ -46,10 +49,30 @@ const RegisterScreen = ({ navigation }) => {
     else{
       firebase.auth().createUserWithEmailAndPassword(email,password)
       .then(()=>{
-        console.log("signing up")
-        navigation.navigate("ApplicationTabs");
+        fetch(`${env.url}/api/users/add-new`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name,
+            email,
+          })
+        }).then(
+          response => response.json()
+        ).then(async ({newlyAddedUser:{_id}}) => {
+          console.log(_id);
+          await AsyncStorage.setItem("userId", _id);
+          await AsyncStorage.setItem("userName", name);
+          await AsyncStorage.setItem("userEmail", email);
+          console.log("signing up");
+          navigation.navigate("ApplicationTabs");
+        }).catch(error => {
+          console.log(error);
+        })
       })
       .catch((err)=>{
+        setErrorMessage(err.message);
         console.log(err.message);
         setErrorMessage(err.errorMessage);
       })

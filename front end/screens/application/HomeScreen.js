@@ -1,38 +1,52 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, Button, TouchableWithoutFeedback, TouchableOpacity, Dimensions, Image, Linking} from "react-native";
 import { ScrollView } from 'react-native-gesture-handler';
 import { color } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useSelector, useDispatch} from 'react-redux'
 import colors from "../../constants/colors";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import env from '../../env';
+import {getAllJournals} from "../../redux/actions";
 
 const { width, height } = Dimensions.get("window");
 
 const HomeScreen = ({ navigation }) => {
+    
+    const journals = useSelector( state => state.journals);
+    const dispatch = useDispatch();
+
     const [moodAnalysisShown, setMoodAnalysisShown] = useState(false);
     const [wordCloudPrompted, setWordCloudPrompted] = useState(true);
     const [wordCloudShown, setWordCloudShown] = useState(false);
-    const diaryEntries = [
-        {
-          id: "1",
-          content:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          creationDate: "6 Jan 2021",
-        },
-        {
-          id: "2",
-          content:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          creationDate: "7 Jan 2021",
+    const [name, setName] = useState('');
+    
+    useEffect(()=>{
+        const getUserId = async () => {
+            const userId = await AsyncStorage.getItem("userId");
+            const response = await fetch(`${env.url}/api/journals/${userId}/get-all`);
+            const data = await response.json();
+            if(!data.error)
+                dispatch(getAllJournals(data.journals));
+            else
+                dispatch(getAllJournals([]))
+            const userName = await AsyncStorage.getItem('userName');
+            setName(userName);
         }
-    ];
-    const url1 = "https://youtu.be/q-9kPks0IfE";
-    const url2 = "https://youtu.be/a2giXO6eyuI";
-    const urlimg1 = "https://img.youtube.com/vi/q-9kPks0IfE/0.jpg";
-    const urlimg2 = "https://img.youtube.com/vi/a2giXO6eyuI/0.jpg";
+        getUserId();
+    }, []);
+
+
+    const url1 = "https://youtu.be/O-6f5wQXSu8";
+    const url2 = "https://youtu.be/inpok4MKVLM";
+    const url3 = "https://www.verywellmind.com/manage-your-anxiety-2584184";
+    const url4 = "https://www.healthline.com/health/depression/how-to-fight-depression";
+    const urlImg1 = "https://img.youtube.com/vi/O-6f5wQXSu8/0.jpg";
+    const urlImg2 = "https://img.youtube.com/vi/inpok4MKVLM/0.jpg";
     var quote = "There are times when we stop, we sit still. We listen and breezes from a whole other world begin to whisper.";
     return (
         
-        <View style={styles.screeen}>
+        <View style={styles.screen}>
 
                 <View style = {styles.quoteContainer}>
                     <Text style={{fontFamily:"Quote", fontSize:200-4*(quote.length/44), textAlign:"center", color:"grey"}} adjustsFontSizeToFit >{quote}</Text>
@@ -40,12 +54,8 @@ const HomeScreen = ({ navigation }) => {
 
                 <View style={styles.helloUserFlex}>
                     <View style={{width:"100%"}}>
-                        <Text style={{...styles.helloStyle}}>Hello Ishant</Text>
-                        <Text style={{color:colors.background, fontFamily:"Medium", fontSize:22, lineHeight:25, marginLeft:15, marginTop:2, opacity:0.8}}>How are you feeling today?</Text>
-
-                        <TouchableOpacity activeOpacity={1} style={styles.addJournalButton} onPress={() => {navigation.navigate("NewWriting")}}>
-                            <Ionicons name="add-sharp" size={32} color={colors.white} style={styles.addIcon}/>
-                        </TouchableOpacity>
+                        <Text style={{...styles.helloStyle}}>Hello {name}</Text>
+                        <Text style={{color:colors.background, fontFamily:"Medium", fontSize:18, lineHeight:20, marginLeft:15, marginTop:2, opacity:0.8}}>How are you feeling today?</Text>
                     </View>
                 </View>
 
@@ -53,157 +63,6 @@ const HomeScreen = ({ navigation }) => {
                 style={styles.scrollStyle}
                 showsVerticalScrollIndicator={false}
                 >
-                <View style={styles.recentMoodContainer}>
-                    <Text style={styles.headingStyle}>Know Your Mood</Text>
-                
-
-                    <View style={styles.analysisCard}>
-                        <View style={styles.row}>
-                            <MaterialIcons
-                            name="text-snippet"
-                            color={colors.darkGrey}
-                            size={20}
-                            style={{ marginRight: 8 }}
-                            />
-                            <View style={styles.rowInfo}>
-                            <Text
-                                style={{
-                                fontFamily: "Medium",
-                                color: colors.lightBlack,
-                                letterSpacing: 0.4,
-                                }}
-                            >
-                                Total Journals
-                            </Text>
-                            <Text
-                                style={{
-                                fontFamily: "Medium",
-                                color: colors.lightBlack,
-                                letterSpacing: 0.4,
-                                marginRight: 8,
-                                }}
-                            >
-                                19
-                            </Text>
-                            </View>
-                        </View>
-                        </View>
-
-                        <TouchableOpacity
-                        activeOpacity={1}
-                        style={styles.analysisCard}
-                        onPress={() => {
-                            setWordCloudPrompted(!wordCloudPrompted);
-                            setWordCloudShown(false);
-                        }}
-                        >
-                        <View style={styles.row}>
-                            <MaterialIcons
-                            name="amp-stories"
-                            color={colors.darkGrey}
-                            size={20}
-                            style={{ marginRight: 8 }}
-                            />
-
-                            <View style={styles.rowInfo}>
-                            <Text
-                                style={{
-                                fontFamily: "Medium",
-                                color: colors.lightBlack,
-                                letterSpacing: 0.4,
-                                }}
-                            >
-                                Word Cloud
-                            </Text>
-                            <MaterialIcons
-                                name={
-                                wordCloudPrompted
-                                    ? "keyboard-arrow-up"
-                                    : "keyboard-arrow-down"
-                                }
-                                color={colors.lightBlack}
-                                size={20}
-                                style={{ marginRight: 8 }}
-                            />
-                            </View>
-                        </View>
-                        {wordCloudPrompted && (
-                            <View style={styles.wordCloudPrompt}>
-                            <Text
-                                style={{
-                                fontFamily: "Regular",
-                                color: colors.darkGrey,
-                                fontSize: 13,
-                                letterSpacing: 0.4,
-                                lineHeight: 16,
-                                marginBottom: 8,
-                                }}
-                            >
-                                World Cloud will generate a PNG/JPG Image consisting the most
-                                used words in your journal. You can create multiple word clouds
-                                by editing your text and regenerating.
-                            </Text>
-                            <TouchableOpacity
-                                activeOpacity={0.8}
-                                onPress={() => {
-                                setWordCloudShown(true);
-                                }}
-                                style={styles.tryButtonContainer}
-                            >
-                                <Text
-                                style={{
-                                    fontFamily: "Medium",
-                                    color: colors.white,
-                                    fontSize: 16,
-                                    letterSpacing: 1,
-                                }}
-                                >
-                                Try Now
-                                </Text>
-                            </TouchableOpacity>
-                            </View>
-                        )}
-                        {wordCloudShown && <View style={styles.wordCloud}></View>}
-                        </TouchableOpacity>
-                        
-                        <TouchableOpacity
-                        activeOpacity={1}
-                        style={styles.analysisCard}
-                        onPress={() => setMoodAnalysisShown(!moodAnalysisShown)}
-                        >
-                        <View style={styles.row}>
-                            <Ionicons
-                            name="analytics-outline"
-                            color={colors.darkGrey}
-                            size={20}
-                            style={{ marginRight: 8 }}
-                            />
-                            <View style={styles.rowInfo}>
-                            <Text
-                                style={{
-                                fontFamily: "Medium",
-                                color: colors.lightBlack,
-                                letterSpacing: 0.4,
-                                }}
-                            >
-                                Mood Analysis
-                            </Text>
-                            <MaterialIcons
-                                name={
-                                moodAnalysisShown
-                                    ? "keyboard-arrow-up"
-                                    : "keyboard-arrow-down"
-                                }
-                                color={colors.lightBlack}
-                                size={20}
-                                style={{ marginRight: 8 }}
-                            />
-                            </View>
-                        </View>
-                        {moodAnalysisShown && <View style={styles.moodAnalysis}></View>}
-                        </TouchableOpacity>
-                    </View>
-                
                 <View style={styles.musicContainer}>
                     <Text style={styles.headingStyle}>Music For You</Text>
                     
@@ -217,7 +76,7 @@ const HomeScreen = ({ navigation }) => {
                         <View style={styles.row}>
                         <View>
                                 <Image
-                                    source={{uri:urlimg1}}
+                                    source={{uri:urlImg1}}
                                     style={{width:48, height:48, marginRight:20}}
                                 />
                                 <Ionicons
@@ -236,7 +95,7 @@ const HomeScreen = ({ navigation }) => {
                                 fontSize:14,
                                 }}
                             >
-                                I'll Be There For You
+                                Meditation for Anxiety
                             </Text>
                             </View>
                         </View>
@@ -253,7 +112,7 @@ const HomeScreen = ({ navigation }) => {
                             
                             <View>
                                 <Image
-                                    source={{uri:urlimg2}}
+                                    source={{uri:urlImg2}}
                                     style={{width:48, height:48, marginRight:20}}
                                 />
                                 <Ionicons
@@ -272,7 +131,7 @@ const HomeScreen = ({ navigation }) => {
                                 fontSize:14,
                                 }}
                             >
-                                Set Fire to the Rain
+                                5-Minute Meditation you can do anywhere
                             </Text>
                             </View>
                         </View>
@@ -286,8 +145,8 @@ const HomeScreen = ({ navigation }) => {
                         <TouchableOpacity
                         activeOpacity={1}
                         style={styles.analysisCard}
-                        onPress={() => Linking.canOpenURL(url1).then(()=>{
-                            Linking.openURL(url1);
+                        onPress={() => Linking.canOpenURL(url3).then(()=>{
+                            Linking.openURL(url3);
                         })}
                         >
                         <View style={styles.row}>
@@ -306,7 +165,7 @@ const HomeScreen = ({ navigation }) => {
                                 fontSize:14,
                                 }}
                             >
-                                I'll Be There For You
+                                Manage your Anxiety
                             </Text>
                             </View>
                         </View>
@@ -315,8 +174,8 @@ const HomeScreen = ({ navigation }) => {
                         <TouchableOpacity
                         activeOpacity={1}
                         style={styles.analysisCard}
-                        onPress={() => Linking.canOpenURL(url2).then(()=>{
-                            Linking.openURL(url2);
+                        onPress={() => Linking.canOpenURL(url4).then(()=>{
+                            Linking.openURL(url4);
                         })}
                         >
                         <View style={styles.row}>
@@ -335,7 +194,7 @@ const HomeScreen = ({ navigation }) => {
                                 fontSize:14,
                                 }}
                             >
-                                Set Fire to the Rain
+                                How to Fight Depression
                             </Text>
                             </View>
                         </View>
@@ -349,7 +208,7 @@ const HomeScreen = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
-    screeen:{
+    screen:{
         flex: 1,
         width: width,
         paddingHorizontal: 16,
@@ -386,21 +245,6 @@ const styles = StyleSheet.create({
         marginTop:40,
         fontFamily:'Name', 
         marginLeft:16
-    },
-    addJournalButton: {
-        position:"absolute",
-        height: 50,
-        width: 50,
-        alignItems: "center",
-        justifyContent:"center",
-        borderRadius: 50,
-        backgroundColor: colors.primary,
-        elevation: 10,
-        borderWidth:1,
-        borderColor:"white",
-        flexDirection:"row",
-        right:4,
-        bottom:-25
     },
 
     //scroll style
