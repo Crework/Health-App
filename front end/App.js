@@ -47,12 +47,7 @@ export default function App() {
       firebase.initializeApp(firebaseConfig);
     }
     checkIfLoggedIn();
-<<<<<<< HEAD
-
-  })
-=======
   });
->>>>>>> 77af57aca85ad3caa8a23da4b28b494c152c6458
 
   if (!fontsLoaded) {
     return (
@@ -72,19 +67,6 @@ export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-<<<<<<< HEAD
-      <Stack.Navigator headerMode="none" initialRouteName={ loggedIn==false ? "AuthenticationStack": "ApplicationTabs"}>
-        <Stack.Screen
-          name="AuthenticationStack"
-          component={AuthenticationStack}
-        />
-        <Stack.Screen 
-          name="ApplicationTabs" 
-          component={ApplicationTabs} 
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-=======
         <Stack.Navigator
           headerMode="none"
           initialRouteName={
@@ -98,7 +80,6 @@ export default function App() {
           <Stack.Screen name="ApplicationTabs" component={ApplicationTabs} />
         </Stack.Navigator>
       </NavigationContainer>
->>>>>>> 77af57aca85ad3caa8a23da4b28b494c152c6458
     </Provider>
   );
 }
