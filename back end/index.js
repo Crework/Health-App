@@ -29,8 +29,15 @@ app.use((req, res, next) => {
 app.use("/api/journals", journalRoutes);
 app.use("/api/users", userRoutes);
 
+app.use("/",(req,res,next)=>{
+    res.json({status : "ok Application Working"});
+});
 
-const PORT = process.env.port || 3000;
+app.use("*",(req,res,next)=>{
+    res.status(404).send("Page Not Found With A Cat");
+});
+
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`Server Running On ${PORT} with DB connected!`);

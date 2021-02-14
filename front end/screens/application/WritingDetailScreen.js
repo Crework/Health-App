@@ -14,7 +14,7 @@ import {
   Dimensions,
   ActivityIndicator
 } from "react-native";
-import env from "../../env";
+import {URL} from "@env";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 import colors from "../../constants/colors";
@@ -58,7 +58,7 @@ const WritingDetailScreen = ({ navigation, route }) => {
 
   useEffect( () =>{
     const fetchJournalDetails = async() => {
-      const response = await fetch(`${env.url}/api/journals/${id}/get-one`);
+      const response = await fetch(`${URL}/api/journals/${id}/get-one`);
       const data = await response.json();
       setContent(data.foundJournal);
       setDateInfo({

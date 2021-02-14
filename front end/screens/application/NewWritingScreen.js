@@ -17,7 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import {useDispatch} from 'react-redux';
 
 import colors from "../../constants/colors";
-import env from "../../env";
+import {URL} from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {addNewJournal} from "../../redux/actions";
 

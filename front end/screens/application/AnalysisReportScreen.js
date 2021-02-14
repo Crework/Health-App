@@ -18,7 +18,7 @@ import { LineChart } from "react-native-chart-kit";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Calendar } from "react-native-calendars";
-import env from '../../env';
+import {URL} from '@env';
 import colors from "../../constants/colors";
 import { useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -46,13 +46,13 @@ const AnalysisReportScreen = ({ navigation }) => {
     setFileName(name);
     const data = getWordsFromJournal();
     console.log(data,name);
-    const response = await fetch(`${env.url}/api/journals/create-word-cloud`, {
+    const response = await fetch(`${URL}/api/journals/create-word-cloud`, {
       method:'POST',
       headers: {'Content-Type' : 'application/json'},
       body : JSON.stringify({content:data, fileName:name})
     });
     const data2 = await response.json();
-    setImageSrc(`${env.url}/image/data/${data2.fileName}.png`);
+    setImageSrc(`${URL}/image/data/${data2.fileName}.png`);
     setWordCloudGenerated(true);
   }
 

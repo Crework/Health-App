@@ -17,7 +17,7 @@ import {
 import firebase from 'firebase';
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import env from "../../env";
+import {URL} from "@env";
 import GoogleIcon from "../../assets/images/google.png";
 import FacebookIcon from "../../assets/images/facebook.png";
 
@@ -56,7 +56,7 @@ const LoginScreen = ({ navigation }) => {
     else{
       firebase.auth().signInWithEmailAndPassword(email,Password)
       .then( async ()=>{
-        const response = await fetch(`${env.url}/api/users/${email}/get-id`);
+        const response = await fetch(`${URL}/api/users/${email}/get-id`);
         const {foundUser} = await response.json()
         await AsyncStorage.setItem("userId", foundUser._id);
         await AsyncStorage.setItem("userName", foundUser.name);

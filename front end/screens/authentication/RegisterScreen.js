@@ -20,7 +20,7 @@ import GoogleIcon from "../../assets/images/google.png";
 import FacebookIcon from "../../assets/images/facebook.png";
 
 import colors from "../../constants/colors";
-import env from '../../env';
+import {URL} from '@env';
 
 const RegisterScreen = ({ navigation }) => {
   let fullNameRef = useRef();
@@ -29,7 +29,7 @@ const RegisterScreen = ({ navigation }) => {
 
   useEffect(() => {
     fullNameRef?.focus();
-    console.log(env.url);
+    console.log(URL);
   }, []);
 
 
@@ -54,7 +54,7 @@ const RegisterScreen = ({ navigation }) => {
     else{
       firebase.auth().createUserWithEmailAndPassword(email,password)
       .then(()=>{
-        fetch(`${env.url}/api/users/add-new`, {
+        fetch(`${URL}/api/users/add-new`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import JournalCard from "../../components/JournalCard";
 import {getAllJournals} from "../../redux/actions";
-import env from "../../env";
+import {URL} from '@env';
 
 
 import colors from "../../constants/colors";
@@ -38,7 +38,6 @@ const AllWritingsScreen = ({ navigation }) => {
   console.log(journals);
   
   const onPlusButtonClicked = () => {
-    console.log(new Date(journals[0].createdAt).toDateString(), new Date().toString())
     if(journals.length && new Date(journals[0].createdAt).toDateString() === new Date().toDateString())
       navigation.navigate("EditWriting", {journal: journals[0]});
     else navigation.navigate('NewWriting');

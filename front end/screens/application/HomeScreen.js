@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSelector, useDispatch} from 'react-redux'
 import colors from "../../constants/colors";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import env from '../../env';
+import {URL} from '@env';
 import {getAllJournals} from "../../redux/actions";
 
 const { width, height } = Dimensions.get("window");
@@ -49,7 +49,7 @@ const HomeScreen = ({ navigation }) => {
 
                 <View style={styles.helloUserFlex}>
                     <View style={{width:"100%"}}>
-                        <Text style={{...styles.helloStyle}}>Hello {name}</Text>
+                        <Text style={{...styles.helloStyle}}>Hello {name.split(" ")[0]}</Text>
                         <Text style={{color:colors.background, fontFamily:"Medium", fontSize:18, lineHeight:20, marginLeft:15, marginTop:2, opacity:0.8}}>How are you feeling today?</Text>
                     </View>
                 </View>
