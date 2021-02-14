@@ -1,9 +1,9 @@
-import {URL} from '@env';
+import Constants from 'expo-constants';
 
 export const getAllJournals = (userId) => {
     return async (dispatch) => {
         console.log("inside dispatch");
-        const response = await fetch(`${URL}/api/journals/${userId}/get-all`);
+        const response = await fetch(`${Constants.manifest.extra.URL}/api/journals/${userId}/get-all`);
         const data = await response.json();
         if(!data.error)
             dispatch({
@@ -21,7 +21,7 @@ export const getAllJournals = (userId) => {
 
 export const addNewJournal = (userId, content) => {
     return async (dispatch) => {
-        const response = await fetch(`${URL}/api/journals/${userId}/add-one`, {
+        const response = await fetch(`${Constants.manifest.extra.URL}/api/journals/${userId}/add-one`, {
             method: "POST",
             headers: {"Content-Type" : "application/json"},
             body : JSON.stringify({
@@ -38,7 +38,7 @@ export const addNewJournal = (userId, content) => {
 
 export const editJournal = (id, content) => {
     return async (dispatch) => {
-        const response = await fetch(`${URL}/api/journals/${id}/edit-one`, {
+        const response = await fetch(`${Constants.manifest.extra.URL}/api/journals/${id}/edit-one`, {
             method: "PUT",
             headers: {"Content-Type" : "application/json"},
             body : JSON.stringify({

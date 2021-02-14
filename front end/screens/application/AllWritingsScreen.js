@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import JournalCard from "../../components/JournalCard";
 import {getAllJournals} from "../../redux/actions";
-import {URL} from '@env';
+import Constants from 'expo-constants';
 
 
 import colors from "../../constants/colors";

@@ -14,7 +14,7 @@ import {
   Dimensions,
   ActivityIndicator
 } from "react-native";
-import {URL} from "@env";
+import Constants from 'expo-constants';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 import colors from "../../constants/colors";
@@ -58,7 +58,7 @@ const WritingDetailScreen = ({ navigation, route }) => {
 
   useEffect( () =>{
     const fetchJournalDetails = async() => {
-      const response = await fetch(`${URL}/api/journals/${id}/get-one`);
+      const response = await fetch(`${Constants.manifest.extra.URL}/api/journals/${id}/get-one`);
       const data = await response.json();
       setContent(data.foundJournal);
       setDateInfo({
@@ -154,7 +154,6 @@ const WritingDetailScreen = ({ navigation, route }) => {
             style={{
               height: 200,
               width: "100%",
-              backgroundColor: colors.differentGreyBackground,
             }}
           >
             {content.content}

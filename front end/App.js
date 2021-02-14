@@ -7,6 +7,8 @@ import * as firebase from "firebase";
 import { Provider } from "react-redux";
 import { ActivityIndicator, View } from "react-native";
 
+
+
 import AuthenticationStack from "./navigation/AuthenticationStack";
 import ApplicationTabs from "./navigation/ApplicationTabs";
 import { firebaseConfig } from "./firebaseConfig";

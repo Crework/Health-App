@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSelector, useDispatch} from 'react-redux'
 import colors from "../../constants/colors";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import {URL} from '@env';
+import Constants from 'expo-constants';
 import {getAllJournals} from "../../redux/actions";
 
 const { width, height } = Dimensions.get("window");

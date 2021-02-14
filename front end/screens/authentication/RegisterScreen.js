@@ -20,7 +20,7 @@ import GoogleIcon from "../../assets/images/google.png";
 import FacebookIcon from "../../assets/images/facebook.png";
 
 import colors from "../../constants/colors";
-import {URL} from '@env';
+import Constants from 'expo-constants';
 
 const RegisterScreen = ({ navigation }) => {
   let fullNameRef = useRef();
@@ -29,7 +29,6 @@ const RegisterScreen = ({ navigation }) => {
 
   useEffect(() => {
     fullNameRef?.focus();
-    console.log(URL);
   }, []);
 
 
@@ -54,7 +53,7 @@ const RegisterScreen = ({ navigation }) => {
     else{
       firebase.auth().createUserWithEmailAndPassword(email,password)
       .then(()=>{
-        fetch(`${URL}/api/users/add-new`, {
+        fetch(`${Constants.manifest.extra.URL}/api/users/add-new`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
