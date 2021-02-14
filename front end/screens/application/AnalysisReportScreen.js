@@ -11,7 +11,8 @@ import {
   Image,
   TouchableOpacity,
   Keyboard,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
@@ -30,23 +31,28 @@ const AnalysisReportScreen = ({ navigation }) => {
   const [fileName, setFileName] = useState('');
   const journals = useSelector(state => state.journals);
   const [wordCloudGenerated, setWordCloudGenerated] = useState(false);
+  const [imageSrc, setImageSrc] = useState('');
 
   const getWordsFromJournal = () => {
-    const end = journals.length>7 ? 8 : (journals.length);
-    return journals.slice(-1,end).map(journal => journal.content).join(' ');
+    const end = journals.length>7 ? 7 : (journals.length);
+    return journals.slice(0,end).map(journal => journal.content).join(' ');
   } 
 
   const onWordCloudPressed = async () =>{
     setWordCloudShown(true);
+    setWordCloudGenerated(false);
+    setImageSrc('');
     const name = await AsyncStorage.getItem('userName');
     setFileName(name);
     const data = getWordsFromJournal();
     console.log(data,name);
-    await fetch(`${env.url}/api/journals/create-word-cloud`, {
+    const response = await fetch(`${env.url}/api/journals/create-word-cloud`, {
       method:'POST',
       headers: {'Content-Type' : 'application/json'},
       body : JSON.stringify({content:data, fileName:name})
     });
+    const data2 = await response.json();
+    setImageSrc(`${env.url}/image/data/${data2.fileName}.png`);
     setWordCloudGenerated(true);
   }
 
@@ -384,7 +390,12 @@ const AnalysisReportScreen = ({ navigation }) => {
           </View>
           
           {wordCloudShown && <View style={styles.wordCloud}>
-                {wordCloudGenerated && <Image source = {{uri: `${env.url}/image/data/${fileName}.png`}}
+                {!wordCloudGenerated && 
+                  <View style={{alignItems: 'center', justifyContent: 'center', flex:1}}>
+                    <ActivityIndicator size = {'large'} color = {colors.primary} />
+                  </View>
+                }
+                {wordCloudGenerated && <Image source = {{uri: imageSrc}}
                         style = {styles.wordCloudImage}
                         width = {width-48}
                         height = {200}

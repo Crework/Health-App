@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Keyboard,
   Dimensions,
+  ActivityIndicator
 } from "react-native";
 import env from "../../env";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -24,7 +25,8 @@ const WritingDetailScreen = ({ navigation, route }) => {
 
   const daysOfTheWeek = [ 'Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const monthsOfTheYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', "August", 'September', 'October', 'November', 'December'];
-  
+  const [loading, setLoading] = useState(true);
+
   const {id} = route.params;
   const [content, setContent] = useState('');
   const [dateInfo, setDateInfo] = useState({
@@ -66,14 +68,16 @@ const WritingDetailScreen = ({ navigation, route }) => {
         year: new Date(data.foundJournal.createdAt).getFullYear(),
         hour: convertTime(new Date(data.foundJournal.createdAt).getHours()),
         minute: new Date(data.foundJournal.createdAt).getMinutes().toString()
-      })
+      });
+      setLoading(false);
     }
     fetchJournalDetails();
   }, []);
 
 
   return (
-    <View style={styles.screen}>
+    <View style= {{flex:1}}>
+      {!loading ? <View style={styles.screen}>
       <View style={styles.writingHeader}>
         <Ionicons
           onPress={() => navigation.goBack()}
@@ -157,6 +161,12 @@ const WritingDetailScreen = ({ navigation, route }) => {
           </Text>
         </View>
       </ScrollView>
+    </View> :
+    <View style={{alignItems: 'center', justifyContent: 'center', flex:1}}>
+      <ActivityIndicator size = {'large'} color = {colors.primary} />
+    </View>
+    
+  }
     </View>
   );
 };

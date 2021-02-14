@@ -10,6 +10,7 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
@@ -37,14 +38,18 @@ const RegisterScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const signUpPressed = () =>{
+    setLoading(true);
     setErrorMessage('');
     if(name.length==0 || email.length==0 || password.length==0 || confirmPassword.length==0){
       setErrorMessage('All fields are necessary');
+      setLoading(false);
     }
     else if(password!=confirmPassword){
       setErrorMessage('Password field does not match');
+      setLoading(false);
     }
     else{
       firebase.auth().createUserWithEmailAndPassword(email,password)
@@ -66,15 +71,20 @@ const RegisterScreen = ({ navigation }) => {
           await AsyncStorage.setItem("userName", name);
           await AsyncStorage.setItem("userEmail", email);
           console.log("signing up");
-          navigation.navigate("ApplicationTabs");
+          navigation.reset({
+            index : 0,
+            routes:[{'name':"ApplicationTabs"}]
+          });
         }).catch(error => {
           console.log(error);
+          setLoading(false);
         })
       })
       .catch((err)=>{
         setErrorMessage(err.message);
         console.log(err.message);
         setErrorMessage(err.errorMessage);
+        setLoading(false);
       })
     }
 
@@ -84,6 +94,8 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.screen} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always">
+      
+      
       <View style={styles.signupHeader}>
         <Text style={styles.signUpText}>Create Account</Text>
       </View>
@@ -161,9 +173,16 @@ const RegisterScreen = ({ navigation }) => {
       <TouchableOpacity
         activeOpacity={0.7}
         style={styles.signupButtonContainer}
-        onPress={() => signUpPressed()}
+        onPress={() => { setLoading(true); signUpPressed();}}
       >
-        <Text style={styles.signupButton}>Sign Up</Text>
+        {loading && <View style={{alignItems:'center', justifyContent:'center', 
+    paddingVertical: 5}}>
+            <ActivityIndicator
+              size={"small"}
+              color={colors.background}
+            />
+          </View>}
+        {!loading && <Text style={styles.signupButton}>Sign Up</Text>}
       </TouchableOpacity>
       <View style={styles.separator}>
         <View style={styles.line} />

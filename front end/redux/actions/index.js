@@ -1,9 +1,21 @@
 import env from "../../env";
 
-export const getAllJournals = (journals) => {
-    return {
-        type: "GET_ALL",
-        payload: journals
+export const getAllJournals = (userId) => {
+    return async (dispatch) => {
+        console.log("inside dispatch");
+        const response = await fetch(`${env.url}/api/journals/${userId}/get-all`);
+        const data = await response.json();
+        if(!data.error)
+            dispatch({
+                type: "GET_ALL",
+                payload: data.journals
+            })
+        else
+            dispatch({
+                type: "GET_ALL",
+                payload: []
+            })
+        
     }
 }
 

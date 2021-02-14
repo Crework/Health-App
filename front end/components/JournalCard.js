@@ -74,13 +74,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   journalHead: {
-    width: "20%",
+    marginLeft:-8,
+    marginRight: 8,
+    alignItems: 'center',
+    width: "16%",
     justifyContent: "center",
   },
   day: {
     color: colors.darkGrey,
     letterSpacing: 0.75,
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "Bold",
   },
   date: {
@@ -92,7 +95,7 @@ const styles = StyleSheet.create({
   month: {
     color: colors.darkGrey,
     letterSpacing: 0.75,
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: "Bold",
   },
   journalContent: {

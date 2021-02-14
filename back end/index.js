@@ -35,6 +35,3 @@ const PORT = process.env.port || 3000;
 app.listen(PORT, () => {
     console.log(`Server Running On ${PORT} with DB connected!`);
 });
-
-// 60254d5f3f086ffd4ae57b79 userid
-// 60254de63f086ffd4ae57b7a" journalid

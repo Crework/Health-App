@@ -24,12 +24,7 @@ const HomeScreen = ({ navigation }) => {
     useEffect(()=>{
         const getUserId = async () => {
             const userId = await AsyncStorage.getItem("userId");
-            const response = await fetch(`${env.url}/api/journals/${userId}/get-all`);
-            const data = await response.json();
-            if(!data.error)
-                dispatch(getAllJournals(data.journals));
-            else
-                dispatch(getAllJournals([]))
+            dispatch(getAllJournals(userId));
             const userName = await AsyncStorage.getItem('userName');
             setName(userName);
         }
@@ -240,8 +235,8 @@ const styles = StyleSheet.create({
     },
     helloStyle: {
         color:colors.background,
-        fontSize:27,
-        lineHeight:27,
+        fontSize:26,
+        lineHeight:30,
         marginTop:40,
         fontFamily:'Name', 
         marginLeft:16
