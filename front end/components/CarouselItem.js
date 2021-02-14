@@ -26,6 +26,7 @@ const CarouselItem = ({ item, navigation }) => {
         </View>
         <View style={styles.featureInfo}>
           <Text style={styles.featureTitle}>{item.title}</Text>
+          <Text style={styles.featureDescription}>{item.description}</Text>
         </View>
       </View>
       <View style={styles.appEntryContainer}>
@@ -57,7 +58,6 @@ const styles = StyleSheet.create({
     width: width - 8,
     paddingVertical: 12,
     height: height * 0.75,
-    justifyContent: "space-around",
     alignItems: "center",
   },
   itemHeader: {
@@ -75,16 +75,26 @@ const styles = StyleSheet.create({
     width: "90%",
   },
   featureTitle: {
-    fontSize: 18,
+    fontSize: 20,
     lineHeight: 36,
     fontFamily: "Medium",
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
     color: colors.black,
+    textAlign: "center",
+    marginBottom: 12
+  },
+  featureDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontFamily: "Regular",
+    letterSpacing: 0.5,
+    color: colors.lightBlack,
     textAlign: "center",
   },
   appEntryContainer: {
     width: "100%",
     paddingHorizontal: 24,
+    marginTop: 24
   },
   entryButtons: {
     width: "100%",

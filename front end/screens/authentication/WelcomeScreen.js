@@ -10,7 +10,7 @@ const WelcomeScreen = ({navigation}) => {
   return (
     <View style={styles.screen}>
       <View style={styles.appLogo}>
-        <Text style={styles.appLogoText}>Happyness</Text>
+        <Text style={styles.appLogoText}>Emo.ai</Text>
       </View>
       <WelcomeCarousel data={featuresData} navigation={navigation}/>
     </View>
@@ -28,8 +28,7 @@ const styles = StyleSheet.create({
   },
   appLogo: {
     width: "100%",
-    height: height * .15,
-    paddingVertical: 12,
+    paddingVertical: 16,
     alignItems: "center",
   },
   appLogoText: {

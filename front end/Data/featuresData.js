@@ -7,18 +7,22 @@ export const featuresData = [
     {
         id: 1,
         title: "Entangle your thoughts",
+        description: "Give a thought to your thought and understand your emotions",
         url: image1
     }, {
         id: 2,
         title: "Write what's on your mind",
+        description: "Journal your thoughts and your feelings daily",
         url: image2
     }, {
         id: 3,
         title: "Keep a track of your progress",
+        description: "See how far you have come from the day you started",
         url: image3
     }, {
         id: 4,
         title: "Connect with people who'll listen",
+        description: "Share with a community that won't judge and would be your support",
         url: image4
     }
 ];
