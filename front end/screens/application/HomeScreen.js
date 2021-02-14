@@ -235,8 +235,8 @@ const styles = StyleSheet.create({
     },
     helloStyle: {
         color:colors.background,
-        fontSize:27,
-        lineHeight:27,
+        fontSize:26,
+        lineHeight:30,
         marginTop:40,
         fontFamily:'Name', 
         marginLeft:16

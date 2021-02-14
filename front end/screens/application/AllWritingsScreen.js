@@ -10,6 +10,7 @@ import {
   TouchableHighlight,
   TouchableWithoutFeedback,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from "react-redux";
@@ -24,14 +25,15 @@ import colors from "../../constants/colors";
 
 const AllWritingsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const journals = useSelector(state => state.journals );
+  const journals = useSelector(state => state.journals);
+  const [ loading, setLoading ] = useState(true);
 
   useEffect(()=>{
     const getUserId = async () => {
         const userId = await AsyncStorage.getItem("userId");
-        dispatch(getAllJournals(userId))
+        return new Promise((resolve, reject) => resolve(dispatch(getAllJournals(userId))));
     }
-    getUserId();
+    getUserId().then(()=>setLoading(false));
   }, [dispatch]);
   console.log(journals);
   
@@ -43,24 +45,31 @@ const AllWritingsScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.searchBoxContainer}>
-        <Ionicons name="search" size={22} color={colors.darkGrey} style={styles.searchLogo}/>
-        <TextInput style={styles.searchInput} placeholder="Search Journals"/>
-      </View>
-      <FlatList
-        contentContainerStyle={styles.journalContainer}
-        data={journals}
-        centerContent
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => {
-          return <JournalCard journal={item} navigation={navigation}/>;
-        }}
-      />
-      <TouchableOpacity activeOpacity={1} style={styles.addJournalButton} onPress={() => {onPlusButtonClicked()}}>
-          <Ionicons name="add-sharp" size={32} color={colors.white} style={styles.addIcon}/>
-      </TouchableOpacity>
+    <View style = {{flex:1}}>
+      {loading && <View style={{alignItems: 'center', justifyContent: 'center', flex:1}}>
+        <ActivityIndicator size = {"large"} color = {colors.primary} />
+      </View>}
+      
+      {!loading && <View style={styles.screen}>
+        <View style={styles.searchBoxContainer}>
+          <Ionicons name="search" size={22} color={colors.darkGrey} style={styles.searchLogo}/>
+          <TextInput style={styles.searchInput} placeholder="Search Journals"/>
+        </View>
+        <FlatList
+          contentContainerStyle={styles.journalContainer}
+          data={journals}
+          centerContent
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => {
+            return <JournalCard journal={item} navigation={navigation}/>;
+          }}
+        />
+        <TouchableOpacity activeOpacity={1} style={styles.addJournalButton} onPress={() => {onPlusButtonClicked()}}>
+            <Ionicons name="add-sharp" size={32} color={colors.white} style={styles.addIcon}/>
+        </TouchableOpacity>
+      </View>}
+
     </View>
   );
 };

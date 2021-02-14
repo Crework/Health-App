@@ -11,6 +11,7 @@ import {
   Image,
   TouchableOpacity,
   Keyboard,
+  ActivityIndicator,
   Alert
 } from "react-native";
 import firebase from 'firebase';
@@ -28,7 +29,7 @@ const LoginScreen = ({ navigation }) => {
   const [Password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [error, seterror] = useState('');
-
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     emailRef?.focus();
@@ -42,17 +43,19 @@ const LoginScreen = ({ navigation }) => {
   }
 
   const onButtonPress = () => {
+    setLoading(true);
     seterror('');
     if(email.length==0 || Password.length==0){
       seterror('Email and Password cannot be blank');
+      setLoading(false);
     }
     else if(!validateEmail(email)){
       seterror('Enter a valid e-mail id');
+      setLoading(false);
     }
     else{
       firebase.auth().signInWithEmailAndPassword(email,Password)
       .then( async ()=>{
-        console.log("here");
         const response = await fetch(`${env.url}/api/users/${email}/get-id`);
         const {foundUser} = await response.json()
         await AsyncStorage.setItem("userId", foundUser._id);
@@ -63,11 +66,13 @@ const LoginScreen = ({ navigation }) => {
         navigation.reset({
           index:0,
           routes: [{name:'ApplicationTabs'}]
-        })
+        });
+        setLoading(false);
       })
       .catch((err)=>{
         console.log(err.message);
         seterror(err.message);
+        setLoading(false);
       })
     }
 
@@ -137,9 +142,16 @@ const LoginScreen = ({ navigation }) => {
       <TouchableOpacity 
         activeOpacity={0.7} 
         style={styles.loginButtonContainer} 
-        onPress={() => onButtonPress()}
+        onPress={() => { setLoading(true); onButtonPress()}}
       >
-        <Text style={styles.loginButton}>Login</Text>
+        {loading && <View style={{alignItems:'center', justifyContent:'center', 
+      paddingVertical: 5}}>
+            <ActivityIndicator
+              size={"small"}
+              color={colors.background}
+            />
+          </View>}
+        {!loading && <Text style={styles.loginButton}>Login</Text>}
       </TouchableOpacity>
       
       <View style={styles.separator}>

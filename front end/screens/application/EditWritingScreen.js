@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Keyboard,
   Dimensions,
+  ActivityIndicator
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -28,6 +29,7 @@ const EditWritingScreen = ({ navigation, route }) => {
 
   const dispatch = useDispatch();
   const {journal} = route.params; 
+  const [loading, setLoading] = useState(true);
 
   const [content, setContent] = useState(journal.content);
   const [upperAreaHeight, setUpperAreaHeight] = useState(0);
@@ -60,7 +62,6 @@ const EditWritingScreen = ({ navigation, route }) => {
   let writingRef = useRef();
 
   useEffect(() => {
-    writingRef?.focus();
     setDateInfo({
       date: new Date(journal.createdAt).getDate(),
       day:daysOfTheWeek[new Date(journal.createdAt).getDay()],
@@ -69,8 +70,12 @@ const EditWritingScreen = ({ navigation, route }) => {
       hour: convertTime(new Date(journal.createdAt).getHours()),
       minute: new Date(journal.createdAt).getMinutes().toString()
     })
-    
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    writingRef?.focus?.();
+  }, [loading])
 
   const onSaveButtonClicked = () => {
     return new Promise((resolve, reject)=>{
@@ -79,67 +84,75 @@ const EditWritingScreen = ({ navigation, route }) => {
   }
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.writingHeader} onLayout={({nativeEvent: {layout : { height }}}) => {setUpperAreaHeight(upperAreaHeight => upperAreaHeight + height)}}>
-        <Ionicons
-          onPress={() => navigation.goBack()}
-          name="close"
-          size={28}
-          color="black"
-          style={styles.backLogo}
-        />
-        <TouchableOpacity activeOpacity={1} style={styles.saveButtonContainer} onPress={()=>{onSaveButtonClicked().then(()=>{navigation.reset({index:0, routes:[{'name':'AllWritings'}]})})}}>
-            <Text style={styles.saveButton}>Save</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.writingInfo}>
-        <View style={styles.dateInfo}>
-          <View style={styles.date}>
-            <View style={styles.row}>
-              <Text style={styles.dateText}>{dateInfo.date}</Text>
-              <Text style={styles.monthText}>{dateInfo.month}</Text>
+    <View style= {{flex:1}}>
+      {!loading ? 
+      <View style={styles.screen}>
+        <View style={styles.writingHeader} onLayout={({nativeEvent: {layout : { height }}}) => {setUpperAreaHeight(upperAreaHeight => upperAreaHeight + height)}}>
+          <Ionicons
+            onPress={() => navigation.goBack()}
+            name="close"
+            size={28}
+            color="black"
+            style={styles.backLogo}
+          />
+          <TouchableOpacity activeOpacity={1} style={styles.saveButtonContainer} onPress={()=>{onSaveButtonClicked().then(()=>{navigation.reset({index:0, routes:[{'name':'AllWritings'}]})})}}>
+              <Text style={styles.saveButton}>Save</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.writingInfo}>
+          <View style={styles.dateInfo}>
+            <View style={styles.date}>
+              <View style={styles.row}>
+                <Text style={styles.dateText}>{dateInfo.date}</Text>
+                <Text style={styles.monthText}>{dateInfo.month}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.yearText}>{dateInfo.year},</Text>
+                <Text style={styles.dayText}>{dateInfo.day}</Text>
+              </View>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.yearText}>{dateInfo.year},</Text>
-              <Text style={styles.dayText}>{dateInfo.day}</Text>
+            <View style={styles.iconContainer}>
+              <Ionicons
+                name="calendar-outline"
+                size={16}
+                color={colors.darkGrey}
+                style={styles.calendarLogo}
+              />
             </View>
           </View>
-          <View style={styles.iconContainer}>
-            <Ionicons
-              name="calendar-outline"
-              size={16}
-              color={colors.darkGrey}
-              style={styles.calendarLogo}
-            />
+          <View style={styles.timeInfo}>
+            <Text style={styles.timeText}>
+              {dateInfo.hour.hours.length==1 ? `0${dateInfo.hour.hours}` : dateInfo.hour.hours}:{ dateInfo.minute.length==1 ? `0${dateInfo.minute}` : dateInfo.minute} {dateInfo.hour.suffix}
+            </Text>
+            <View style={styles.iconContainer}>
+              <Ionicons
+                name="time"
+                size={16}
+                color={colors.darkGrey}
+                style={styles.clockLogo}
+              />
+            </View>
           </View>
         </View>
-        <View style={styles.timeInfo}>
-          <Text style={styles.timeText}>
-            {dateInfo.hour.hours.length==1 ? `0${dateInfo.hour.hours}` : dateInfo.hour.hours}:{ dateInfo.minute.length==1 ? `0${dateInfo.minute}` : dateInfo.minute} {dateInfo.hour.suffix}
-          </Text>
-          <View style={styles.iconContainer}>
-            <Ionicons
-              name="time"
-              size={16}
-              color={colors.darkGrey}
-              style={styles.clockLogo}
-            />
-          </View>
-        </View>
+        <KeyboardAvoidingView behavior="padding" style={[styles.writingForm, {height: height - (3*upperAreaHeight)}]}>
+          <TextInput
+            placeholder="Write here"
+            multiline={true}
+            scrollEnabled={true}
+            blurOnSubmit={true}
+            value = {content}
+            onChangeText = {text => setContent(text)}
+            returnKeyType="done"
+            style={styles.input}
+            ref={(writing) => (writingRef = writing)}
+          />
+        </KeyboardAvoidingView>
+      </View>:
+      <View style={{alignItems: 'center', justifyContent: 'center', flex:1}}>
+        <ActivityIndicator size = {'large'} color = {colors.primary} />
       </View>
-      <KeyboardAvoidingView behavior="padding" style={[styles.writingForm, {height: height - (3*upperAreaHeight)}]}>
-        <TextInput
-          placeholder="Write here"
-          multiline={true}
-          scrollEnabled={true}
-          blurOnSubmit={true}
-          value = {content}
-          onChangeText = {text => setContent(text)}
-          returnKeyType="done"
-          style={styles.input}
-          ref={(writing) => (writingRef = writing)}
-        />
-      </KeyboardAvoidingView>
+      
+    }
     </View>
   );
 };

@@ -11,7 +11,8 @@ import {
   Image,
   TouchableOpacity,
   Keyboard,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
@@ -38,7 +39,7 @@ const AnalysisReportScreen = ({ navigation }) => {
   } 
 
   const onWordCloudPressed = async () =>{
-    setWordCloudShown(false);
+    setWordCloudShown(true);
     setWordCloudGenerated(false);
     setImageSrc('');
     const name = await AsyncStorage.getItem('userName');
@@ -52,7 +53,6 @@ const AnalysisReportScreen = ({ navigation }) => {
     });
     const data2 = await response.json();
     setImageSrc(`${env.url}/image/data/${data2.fileName}.png`);
-    setWordCloudShown(true);
     setWordCloudGenerated(true);
   }
 
@@ -390,6 +390,11 @@ const AnalysisReportScreen = ({ navigation }) => {
           </View>
           
           {wordCloudShown && <View style={styles.wordCloud}>
+                {!wordCloudGenerated && 
+                  <View style={{alignItems: 'center', justifyContent: 'center', flex:1}}>
+                    <ActivityIndicator size = {'large'} color = {colors.primary} />
+                  </View>
+                }
                 {wordCloudGenerated && <Image source = {{uri: imageSrc}}
                         style = {styles.wordCloudImage}
                         width = {width-48}
