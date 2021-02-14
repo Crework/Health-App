@@ -66,7 +66,10 @@ const RegisterScreen = ({ navigation }) => {
           await AsyncStorage.setItem("userName", name);
           await AsyncStorage.setItem("userEmail", email);
           console.log("signing up");
-          navigation.navigate("ApplicationTabs");
+          navigation.reset({
+            index : 0,
+            routes:[{'name':"ApplicationTabs"}]
+          });
         }).catch(error => {
           console.log(error);
         })

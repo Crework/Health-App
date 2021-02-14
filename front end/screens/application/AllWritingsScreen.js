@@ -23,25 +23,22 @@ import colors from "../../constants/colors";
 
 
 const AllWritingsScreen = ({ navigation }) => {
-  const journals = useSelector(state => state.journals );
   const dispatch = useDispatch();
+  const journals = useSelector(state => state.journals );
 
   useEffect(()=>{
     const getUserId = async () => {
         const userId = await AsyncStorage.getItem("userId");
-        const response = await fetch(`${env.url}/api/journals/${userId}/get-all`);
-        const data = await response.json();
-        if(!data.error)
-            dispatch(getAllJournals(data.journals));
-        else
-            dispatch(getAllJournals([]))
+        dispatch(getAllJournals(userId))
     }
     getUserId();
-}, []);
+  }, [dispatch]);
+  console.log(journals);
   
   const onPlusButtonClicked = () => {
-    if(journals.length && journals[journals.length-1].createdAt.split('T')[0] === new Date().toISOString().split('T')[0])
-      navigation.navigate("EditWriting", {journal: journals[journals.length -1]});
+    console.log(new Date(journals[0].createdAt).toDateString(), new Date().toString())
+    if(journals.length && new Date(journals[0].createdAt).toDateString() === new Date().toDateString())
+      navigation.navigate("EditWriting", {journal: journals[0]});
     else navigation.navigate('NewWriting');
   }
 

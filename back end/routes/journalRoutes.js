@@ -1,6 +1,8 @@
 const express = require("express");
 const { spawn } = require("child_process");
 const mongoose = require("mongoose");
+const { v4:uuidv4 } = require('uuid');
+
 const Journal = require("../models/JournalSchema");
 const User = require("../models/UserSchema");
 
@@ -117,16 +119,15 @@ router.get("/:journalId/get-one/", async (req, res) => {
 
 router.post("/create-word-cloud", async (req, res) => {
   const content = req.body.content;
-  const fileName = req.body.fileName;
+  const fileName = uuidv4();
   try{
     const process = spawn("python3", ["./word cloud/wordcloud_for_journal.py", content, fileName]);
     let needData = true;
     process.stdout.on("data", async (data) => {
       needData = false;
-      return res.json();
+      return res.json({fileName});
     })
-    process.on('close', code => res.json({"code": code.toString()}));
-
+    process.on('close', code => res.json({fileName}));
   } catch(error){
     console.error();
   }

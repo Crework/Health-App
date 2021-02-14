@@ -73,10 +73,8 @@ const EditWritingScreen = ({ navigation, route }) => {
   }, []);
 
   const onSaveButtonClicked = () => {
-    dispatch(editJournal(journal._id, content));
-    navigation.reset({
-      index : 0,
-      routes:[{name : "AllWritings"}]
+    return new Promise((resolve, reject)=>{
+      resolve(dispatch(editJournal(journal._id, content)))
     });
   }
 
@@ -90,7 +88,7 @@ const EditWritingScreen = ({ navigation, route }) => {
           color="black"
           style={styles.backLogo}
         />
-        <TouchableOpacity activeOpacity={1} style={styles.saveButtonContainer} onPress={onSaveButtonClicked}>
+        <TouchableOpacity activeOpacity={1} style={styles.saveButtonContainer} onPress={()=>{onSaveButtonClicked().then(()=>{navigation.reset({index:0, routes:[{'name':'AllWritings'}]})})}}>
             <Text style={styles.saveButton}>Save</Text>
         </TouchableOpacity>
       </View>

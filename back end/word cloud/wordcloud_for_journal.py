@@ -16,7 +16,7 @@ pip install contractions
 """
 
 # Mask is the shape of the cloud
-mask = np.array(Image.open('./word cloud/mask_for_wordcloud.jpg'))
+# mask = np.array(Image.open('./word cloud/mask_for_wordcloud.jpg'))
 stop_words = stopwords.words('english')
 
 text = sys.argv[1]
@@ -43,11 +43,10 @@ if 'suicidal' in words:
 
 sentence = ' '.join(words)
 
-wordcloud = WordCloud(width = 800, height = 800,
+wordcloud = WordCloud(width = 1400, height = 800,
                       background_color = 'white',
-                      mask = mask,
                       stopwords = stop_words,
-                      min_font_size = 10).generate(sentence)
+                      min_font_size = 40).generate(sentence)
 
 file_name = './word cloud/data/'+ sys.argv[2] +'.png'
 wordcloud.to_file(file_name)
